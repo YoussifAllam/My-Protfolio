@@ -21,12 +21,12 @@ read real content from an API instead of hardcoded TypeScript arrays.
 ## Quick start
 
 ```bash
-cd Backend
+cd /run/media/youssif/Work/Django/Protfolio
 
-make venv                              # creates Venv/ and installs requirements.txt
-cp ENV/.env.example ENV/.env.local     # then set SECRET_KEY inside it
+make venv                              # creates Backend/Venv/ and installs requirements.txt
+cp Backend/ENV/.env.example Backend/ENV/.env.local
 make mi                                # apply migrations (SQLite, no server needed)
-Venv/bin/python manage.py seed_portfolio --settings=config.django.local
+make seed                              # seed portfolio content
 make superuser                         # create your first admin
 make run                               # http://127.0.0.1:8000
 ```
@@ -34,10 +34,11 @@ make run                               # http://127.0.0.1:8000
 Generate a secret key with:
 
 ```bash
-Venv/bin/python -c "from django.core.management.utils import get_random_secret_key as k; print(k())"
+Backend/Venv/bin/python -c "from django.core.management.utils import get_random_secret_key as k; print(k())"
 ```
 
-Run `make` on its own to see every target. All of them take `ENV=local|test|prod`.
+Run `make` from the project root to see every target. Django targets take
+`ENV=local|test|prod`.
 
 ```bash
 make test        # pytest — in-memory SQLite, no database server required
