@@ -1,0 +1,1641 @@
+Create a complete, responsive, premium personal portfolio website in Figma Make for a professional Python developer.
+
+# Personal Information
+
+**Full Name:** Youssif Hassan Allam
+**Display Name:** Youssif Hassan
+**Primary Role:** Python Backend Developer
+**Secondary Expertise:** PyQt5 Desktop Applications, DevOps, AI and Machine Learning
+**Location:** Cairo, Egypt
+**Professional Experience:** 2.5+ years
+**Working Since:** 2023
+**Email:** [youssifhassan011@gmail.com](mailto:youssifhassan011@gmail.com)
+
+Use editable placeholders for:
+
+* Phone number
+* LinkedIn URL
+* GitHub URL
+* Medium URL
+* Codeforces URL
+* LeetCode URL
+* CV download URL
+
+# Main Portfolio Goal
+
+Design a distinctive, technical, modern, and highly professional portfolio that communicates:
+
+> Youssif is a Python Backend Developer who specializes in building scalable Django systems, production APIs, data-intensive platforms, desktop applications, DevOps infrastructure, and AI-powered products.
+
+The portfolio should present Backend Django development as the primary specialization.
+
+The visual hierarchy must be:
+
+1. Python and Django backend engineering
+2. Large production projects and technical case studies
+3. PyQt5 desktop applications
+4. DevOps and cloud deployment
+5. AI and machine learning integrations
+6. Full-stack development
+
+The website must appeal to:
+
+* Backend engineering recruiters
+* Software companies
+* Technical managers
+* International clients
+* Startup founders
+* Freelance clients
+
+# Creative Concept
+
+Use the creative concept:
+
+## Python Systems Lab
+
+The portfolio should feel like a premium technical workspace where scalable Python systems are designed, built, deployed, and monitored.
+
+Combine the visual language of:
+
+* Modern SaaS dashboards
+* Backend architecture diagrams
+* Clean technical documentation
+* API monitoring tools
+* Developer workspaces
+* Production control panels
+* Premium personal-brand websites
+
+The website must feel like a real software product, not a generic online CV.
+
+# Important Design Rules
+
+The website should express a strong love for Python and Django without looking childish or overly decorative.
+
+Use subtle Python-inspired visual elements such as:
+
+* Python syntax
+* Indentation lines
+* API routes
+* Database nodes
+* Service connections
+* Request and response indicators
+* Terminal commands
+* Django ORM-inspired headings
+* System architecture diagrams
+
+Avoid:
+
+* Matrix-style backgrounds
+* Excessive hacker visuals
+* Large snake illustrations
+* Large Python logos in every section
+* Cyberpunk neon styling
+* Continuous typing effects
+* Excessive glow
+* Too many moving objects
+* Rotating technology logos
+* Generic developer portfolio templates
+
+# Color System
+
+Use a premium dark theme as the default.
+
+## Main Colors
+
+* Main background: `#080D18`
+* Secondary background: `#0B1120`
+* Card background: `#111827`
+* Elevated card background: `#172033`
+* Python blue: `#3776AB`
+* Bright Python blue: `#4B9CD3`
+* Python yellow: `#FFD343`
+* Django green: `#0C4B33`
+* Light Django green: `#44B78B`
+* Main text: `#F8FAFC`
+* Secondary text: `#94A3B8`
+* Muted text: `#64748B`
+* Border: `#243044`
+* Success: `#22C55E`
+* Warning: `#F59E0B`
+
+Use Python blue as the main accent color.
+
+Use Python yellow sparingly for:
+
+* Important numbers
+* Active indicators
+* Small decorative details
+* Highlighted words
+* Status lights
+
+Use Django green for:
+
+* Django technologies
+* Backend badges
+* Production status
+* Database or API components
+
+Do not use blue, yellow, and green with equal visual weight.
+
+# Typography
+
+Use a modern sans-serif font for:
+
+* Headings
+* Paragraphs
+* Navigation
+* Buttons
+* Project descriptions
+
+Use a professional monospace font only for:
+
+* Technical labels
+* Code-inspired headings
+* API routes
+* Terminal content
+* Project metadata
+* Technology badges
+* Small interface labels
+
+Do not use monospace typography for long paragraphs.
+
+# Responsive Requirements
+
+Create complete responsive layouts for:
+
+* Large desktop
+* Standard desktop
+* Laptop
+* Tablet
+* Mobile
+
+Mobile requirements:
+
+* Stack hero content vertically
+* Reduce decorative architecture complexity
+* Make project category filters horizontally scrollable
+* Display one project card per row
+* Convert sticky sidebars into standard content sections
+* Make galleries touch-friendly
+* Use full-width primary action buttons when appropriate
+* Maintain readable text and comfortable spacing
+
+# Website Structure
+
+Create the following pages and routes:
+
+1. Home — `/`
+2. Projects — `/projects`
+3. Featured Project — `/featured-project`
+4. Dynamic Project Details — `/projects/project-slug`
+5. About — `/about`
+6. Experience — `/experience`
+7. Contact — `/contact`
+
+Create reusable components for all pages.
+
+# Global Navigation
+
+Create a sticky top navigation bar.
+
+Include:
+
+* Youssif Hassan logo or wordmark
+* Home
+* Projects
+* About
+* Experience
+* Contact
+* Download CV button
+
+Add a small custom Python-inspired symbol beside the name.
+
+The symbol should combine ideas such as:
+
+* Letter Y
+* Python indentation
+* API nodes
+* Curved data routes
+
+Do not directly copy the official Python logo.
+
+Add an active navigation state.
+
+For mobile, use a clean slide-out menu.
+
+# Home Page
+
+## Hero Section
+
+Create a premium split-layout hero section.
+
+### Left Side
+
+Display a small status badge:
+
+> Available for Python and Django opportunities
+
+Display:
+
+**Youssif Hassan**
+
+**Python Backend Developer**
+
+Use this main headline:
+
+> Building scalable Django systems and powerful Python applications.
+
+Use this supporting text:
+
+> Python Backend Developer with 2.5+ years of experience building scalable APIs, data-intensive platforms, containerized deployments, PyQt5 desktop applications, and AI-powered solutions.
+
+Add three buttons:
+
+* Explore My Projects
+* Download CV
+* Contact Me
+
+Add technology badges:
+
+* Python
+* Django
+* Django REST Framework
+* PostgreSQL
+* Redis
+* Celery
+* Docker
+* PyQt5
+
+### Right Side
+
+Create an interactive backend architecture illustration.
+
+Show these connected components:
+
+```text
+Web and Mobile Clients
+          ↓
+        Nginx
+          ↓
+   Django REST API
+     ↙    ↓     ↘
+PostgreSQL Redis Celery
+          ↓
+ Monitoring and Deployment
+```
+
+Also include subtle nodes for:
+
+* WebSockets
+* Elasticsearch
+* Docker
+* AWS EC2
+* Prometheus
+* Grafana
+
+Use subtle animated data packets moving between components.
+
+Animation must be smooth, slow, and professional.
+
+## Terminal Introduction
+
+Add a compact terminal-style card:
+
+```bash
+$ whoami
+Youssif Hassan — Python Backend Developer
+
+$ experience
+2.5+ years
+
+$ main_specialization
+Django · DRF · PostgreSQL · Redis · Celery
+
+$ additional_expertise
+PyQt5 · DevOps · AI · Machine Learning
+
+$ location
+Cairo, Egypt
+```
+
+Run the terminal animation once only.
+
+## Professional Metrics
+
+Create a responsive metric strip using information from the CV.
+
+Display:
+
+* 2.5+ years of professional experience
+* 1,000+ branches supported
+* Approximately 1 billion sales records handled
+* 5K+ daily API requests
+* 40% faster response times
+* 80% shorter deployment cycles
+* Up to 99.9% production uptime
+
+Add a small note in the design system that metrics must be connected to their relevant projects and should not appear as unsupported universal claims.
+
+## About Preview
+
+Use this content:
+
+> I am a Python Backend Developer specializing in Django and Django REST Framework. I build scalable APIs, authentication and permission systems, asynchronous workflows, database-driven products, and production deployment infrastructure. I also develop PyQt5 desktop applications and have practical experience integrating AI and machine learning into real software products.
+
+Add a button:
+
+* More About Me
+
+## Main Expertise
+
+Create four expertise cards.
+
+### Backend Engineering
+
+Make this card visually dominant.
+
+Include:
+
+* Python
+* Django
+* Django REST Framework
+* REST APIs
+* Authentication
+* Role-based permissions
+* PostgreSQL
+* MySQL
+* MS SQL Server
+* Redis
+* Celery
+* WebSockets
+* Elasticsearch
+
+### Desktop Applications
+
+Include:
+
+* PyQt5
+* Desktop dashboards
+* REST API integration
+* Background workers
+* Multithreading
+* Linux applications
+* Windows applications
+* Local system integrations
+
+Use editable project placeholders because named desktop projects are not included in the provided CV.
+
+Do not invent desktop project statistics.
+
+### DevOps and Infrastructure
+
+Include:
+
+* Docker
+* Docker Compose
+* GitHub Actions
+* CI/CD
+* AWS EC2
+* VPS deployment
+* Nginx
+* Apache
+* Load balancing
+* Prometheus
+* Grafana
+
+### AI and Machine Learning
+
+Include:
+
+* OpenAI GPT
+* Google Gemini
+* LangChain
+* Regression
+* Classification
+* Time-series forecasting
+* CNNs
+* Image classification
+* Transfer learning
+* Action detection
+* Deep Neural Networks
+
+# Featured Projects Preview
+
+Use this code-inspired heading:
+
+```python
+featured_projects = Project.objects.filter(featured=True)
+```
+
+Show three or four highlighted project cards.
+
+Recommended highlighted projects:
+
+1. JAFCO Analytics Backend
+2. Prezza App
+3. GrowthAnalyzerPro
+4. Speaking Fingers
+
+Each card must contain:
+
+* Project cover image
+* Project name
+* Category badges
+* Project status
+* First three lines of the project description
+* Main technologies
+* Year
+* View Details button
+* Available external links
+
+Add a button:
+
+* Explore All Projects
+
+# Projects Page
+
+Create a complete project explorer page.
+
+## Projects Header
+
+Display:
+
+**Projects**
+
+Supporting text:
+
+> Production backend systems, scalable platforms, AI-powered products, full-stack applications, and Python desktop software.
+
+## Project Category Filters
+
+Create filter buttons for:
+
+* All Projects
+* Backend
+* Full Stack
+* AI
+* Desktop Apps
+* DevOps
+
+A project can belong to multiple categories.
+
+When a visitor selects a category:
+
+* Show only matching projects
+* Update the visible project count
+* Animate the transition smoothly
+* Do not reload the full page
+
+The selected category must have a strong active state.
+
+Display category counts automatically based on project data.
+
+## Search and Sorting
+
+Add a project search field with this placeholder:
+
+> Search projects, technologies, or solutions...
+
+Search by:
+
+* Project name
+* Description
+* Category
+* Technology
+* Role
+
+Add an optional sort menu:
+
+* Featured
+* Newest
+* Oldest
+* Alphabetical
+
+## Project Cards
+
+Use a responsive project grid.
+
+Each project card must contain:
+
+* Cover image or screenshot
+* Project name
+* Category badges
+* Project status
+* Description limited to exactly three visual lines
+* Role
+* Main technologies
+* Project year
+* View Details button
+* Available external links
+
+Use line clamping for the three-line description.
+
+Add professional hover interactions:
+
+* Slight elevation
+* Small image scale
+* Python-blue border highlight
+* Animated arrow
+* Technology badge emphasis
+
+Do not use excessive glow.
+
+## Empty State
+
+When no project matches the selected filters or search, show:
+
+> No projects match your current filters.
+
+Add a button:
+
+* Clear Filters
+
+# Project Link System
+
+Each project may have any number of links.
+
+Supported link types:
+
+* Live Website
+* Landing Page
+* Admin Dashboard
+* API Documentation
+* Swagger Documentation
+* GitHub Repository
+* Google Play Store
+* Apple App Store
+* Microsoft Store
+* Desktop App Download
+* Demo Video
+* Research Paper
+* Case Study
+* Figma Design
+* Technical Documentation
+
+Only display links that exist for the project.
+
+Never show fake links.
+
+Each link must include:
+
+* Relevant icon
+* Link label
+* External-link indicator
+* Accessible hover and focus state
+
+External links should open in a new browser tab.
+
+# Featured Project Page
+
+Create a dedicated premium technical case-study page.
+
+Use the JAFCO Analytics Backend as the initial featured project because it demonstrates the largest scale in the provided experience.
+
+Make the featured project configurable so it can later be changed to Prezza or another project.
+
+## Featured Project Hero
+
+Display:
+
+* Featured Case Study label
+* Project name
+* Project summary
+* Categories
+* Role
+* Company
+* Date
+* Status
+* Main technologies
+* Cover image
+* Available links
+
+Initial content:
+
+**Project Name:** JAFCO Analytics Backend
+
+**Role:** Python Backend Developer
+
+**Company:** ADEX Jordan Company
+
+**Date:** April 2026 — Present
+
+**Categories:** Backend, Enterprise System, Data Platform
+
+**Short Summary:**
+
+> A Django analytics backend supporting more than 1,000 branches and processing approximately one billion sales records.
+
+Do not invent additional performance statistics, screenshots, client data, or business results.
+
+Where real project images are unavailable, use clearly marked image placeholders.
+
+## Featured Project Sections
+
+### Project Overview
+
+Explain:
+
+* The platform is a Django analytics backend
+* It supports more than 1,000 branches
+* It processes approximately one billion sales records
+* Youssif contributed to backend development and business workflows
+* The work was completed as part of his role at ADEX Jordan Company
+
+### Responsibilities
+
+Use supported responsibility examples:
+
+* Developed Django backend functionality
+* Implemented APIs
+* Worked with authentication and permissions
+* Contributed to business workflows
+* Translated client requirements into maintainable Django solutions
+* Supported rapid iteration and delivery
+
+Do not add technologies not explicitly associated with this project unless marked as editable placeholders.
+
+### Architecture
+
+Create an editable architecture diagram with placeholder nodes for:
+
+* Data sources
+* Django analytics backend
+* Database layer
+* Authentication and permissions
+* Analytics processing
+* Client dashboards
+
+Label the diagram:
+
+> Illustrative architecture — replace with verified project architecture.
+
+### Confidentiality State
+
+Add an optional project configuration:
+
+```javascript
+confidential: true
+```
+
+When confidential is true:
+
+* Hide private repository links
+* Hide client-sensitive screenshots
+* Use architecture illustrations and sanitized interface mockups
+* Display a small badge: Confidential Enterprise Project
+
+### Gallery
+
+Use placeholders for:
+
+* Analytics dashboard
+* Branch-level reports
+* Data-processing architecture
+* API overview
+* Database architecture
+
+Clearly mark all placeholders as replaceable.
+
+# Dynamic Project Details Page
+
+Create project pages using routes such as:
+
+```text
+/projects/jafco-analytics
+/projects/baggr
+/projects/mutqinai
+/projects/prezza
+/projects/growth-analyzer-pro
+/projects/emily
+/projects/speaking-fingers
+```
+
+## Project Hero
+
+Display:
+
+* Project name
+* Subtitle
+* Full-width cover image
+* Categories
+* Status
+* Date
+* Role
+* Company or project type
+* Main technologies
+* Available links
+
+## Project Information Sidebar
+
+On desktop, create a sticky sidebar containing:
+
+* My role
+* Timeline
+* Project type
+* Status
+* Company
+* Categories
+* Technologies
+* Platforms
+* Links
+
+On mobile, display this information below the project hero.
+
+## Full Description
+
+Support structured project content containing:
+
+* Background
+* Problem
+* Solution
+* Main features
+* My contribution
+* Architecture
+* Technical decisions
+* Challenges
+* Results
+* Technologies
+* Gallery
+* Links
+
+Support:
+
+* Headings
+* Paragraphs
+* Lists
+* Highlight boxes
+* Code snippets
+* Diagrams
+* Quotes
+* Metrics
+
+## Project Gallery
+
+Create a professional responsive gallery.
+
+Support:
+
+* Main screenshot
+* Thumbnail grid
+* Image captions
+* Full-screen lightbox
+* Previous and next buttons
+* Image counter
+* Keyboard controls
+* Mobile swipe gestures
+
+Support different image types:
+
+* Mobile screenshots
+* Desktop screenshots
+* Dashboard screenshots
+* Architecture diagrams
+* Database diagrams
+* Deployment diagrams
+* API documentation screenshots
+
+## Technical Challenge Cards
+
+Use this structure:
+
+**Challenge**
+
+Describe the technical problem.
+
+**Approach**
+
+Describe the selected technical approach.
+
+**Solution**
+
+Describe the implementation.
+
+**Result**
+
+Describe the verified result.
+
+Never invent challenge results or metrics.
+
+Use editable placeholders when details are unavailable.
+
+## Previous and Next Navigation
+
+At the bottom of every project page, include:
+
+* Previous Project
+* Back to All Projects
+* Next Project
+
+## Related Projects
+
+Show up to three related projects based on:
+
+* Shared categories
+* Shared technologies
+* Similar project type
+
+# Real Project Content
+
+Use the following project data.
+
+## 1. JAFCO Analytics Backend
+
+**Slug:** `jafco-analytics`
+
+**Categories:**
+
+* Backend
+* Enterprise System
+* Data Platform
+
+**Role:** Python Backend Developer
+
+**Company:** ADEX Jordan Company
+
+**Date:** April 2026 — Present
+
+**Status:** Production or Active Development
+
+**Short Description:**
+
+> A Django analytics backend supporting more than 1,000 branches and processing approximately one billion sales records.
+
+**Full Description Basis:**
+
+Youssif developed Django backend functionality for a large analytics platform used by JAFCO. The platform supports more than 1,000 branches and processes approximately one billion sales records.
+
+Youssif also contributed to additional multi-tenant SaaS systems and delivery applications at ADEX, implementing APIs, tenant isolation, authentication, permissions, and business workflows.
+
+**Responsibilities:**
+
+* Django backend development
+* API implementation
+* Authentication and permissions
+* Tenant isolation
+* Business workflows
+* Client requirement analysis
+* Maintainable backend solutions
+
+**Links:**
+
+Use empty placeholders only.
+
+**Confidential:** true
+
+## 2. BAGGR Logistics Platform
+
+**Slug:** `baggr-logistics`
+
+**Categories:**
+
+* Backend
+* DevOps
+* Logistics
+* Microservices
+
+**Role:** Python Backend Developer
+
+**Company:** BAGGR
+
+**Date:** April 2024 — October 2024
+
+**Status:** Production
+
+**Short Description:**
+
+> A shipping and logistics platform built with Django microservices, optimized database queries, containerized deployments, and production monitoring.
+
+**Verified Results:**
+
+* 40% faster response times
+* 80% shorter deployment time
+* 99.9% uptime
+
+**Responsibilities:**
+
+* Architected Django microservices
+* Optimized database performance
+* Implemented database indexing strategies
+* Created Docker-based deployment workflows
+* Worked with CI/CD pipelines
+* Implemented monitoring with Grafana and Prometheus
+
+**Technologies:**
+
+* Python
+* Django
+* Docker
+* CI/CD
+* Grafana
+* Prometheus
+* Relational databases
+
+Do not invent specific cloud providers or additional technologies.
+
+## 3. Mutqinai
+
+**Slug:** `mutqinai`
+
+**Categories:**
+
+* Backend
+* AI
+* DevOps
+* E-commerce
+
+**Role:** Python Developer
+
+**Company:** Mutqinai
+
+**Date:** January 2024 — April 2024
+
+**Status:** Production
+
+**Short Description:**
+
+> An AI-powered e-commerce platform using Django REST Framework, OpenAI GPT, Google Gemini, and LangChain to deliver personalized tools at scale.
+
+**Verified Results:**
+
+* More than 5,000 daily API requests
+* 99.5% uptime
+
+**Responsibilities:**
+
+* Built REST APIs
+* Integrated OpenAI GPT
+* Integrated Google Gemini
+* Used LangChain for AI workflows
+* Implemented social authentication
+* Worked on GDPR-compliant authentication
+* Used caching and load balancing
+* Deployed the platform on a VPS
+* Worked with GAN-based image-processing functionality
+
+**Technologies:**
+
+* Python
+* Django
+* Django REST Framework
+* OpenAI GPT
+* Google Gemini
+* LangChain
+* VPS
+* Apache
+* Caching
+* Load balancing
+
+**Links:**
+
+Create an editable live-site link placeholder for `mutqinai.com`.
+
+Do not add a GitHub link unless provided later.
+
+## 4. Prezza App
+
+**Slug:** `prezza-app`
+
+**Categories:**
+
+* Backend
+* DevOps
+* E-commerce
+* Social Platform
+
+**Role:** Backend Developer
+
+**Status:** Under Development
+
+**Short Description:**
+
+> A high-availability multi-vendor e-commerce and social platform built with Django REST Framework, asynchronous processing, search, caching, and production monitoring.
+
+**Project Context:**
+
+A Qatar-based multi-vendor e-commerce platform with social features.
+
+**Responsibilities and Technologies:**
+
+* Django REST Framework backend
+* PostgreSQL
+* Celery
+* Redis
+* Elasticsearch
+* Docker
+* Nginx
+* AWS EC2
+* Elastic Load Balancer
+* GitHub Actions CI/CD
+* Prometheus
+* Grafana
+
+Use editable placeholders for:
+
+* Landing page
+* Mobile app links
+* API documentation
+* Screenshots
+* Exact project date
+* Full list of personal contributions
+
+Do not invent Google Play or Apple App Store links.
+
+## 5. GrowthAnalyzerPro
+
+**Slug:** `growth-analyzer-pro`
+
+**Categories:**
+
+* Full Stack
+* Backend
+* AI
+* Machine Learning
+* Research
+
+**Role:** Full-Stack Developer and Machine Learning Engineer
+
+**Collaboration:** Qassim University
+
+**Status:** Research Project
+
+**Short Description:**
+
+> A full-stack health analytics and machine-learning platform developed for child stunting prediction using Django, React, Docker, and deep neural networks.
+
+**Responsibilities:**
+
+* Engineered a modular Django API
+* Integrated machine-learning models
+* Worked on React and Django deployment
+* Used Docker and Nginx
+* Conducted statistical analysis on health datasets
+* Developed and optimized Deep Neural Networks
+* Worked on nutritional status classification
+* Co-authored a published research study
+* Used agentic AI development tools including Claude Code and Gemini
+
+**Technologies:**
+
+* Python
+* Django
+* React
+* Docker
+* Nginx
+* Deep Neural Networks
+* Statistical analysis
+* Machine learning
+* Gemini
+* Claude Code
+
+Add an editable link placeholder for:
+
+* Research paper
+* Demo
+* GitHub
+* Case study
+
+Do not invent publication details that are not provided.
+
+## 6. Emily’s Luxury
+
+**Slug:** `emilys-luxury`
+
+**Categories:**
+
+* Backend
+* E-commerce
+* Multi-vendor Platform
+
+**Role:** Backend Developer
+
+**Status:** Production or Deployed
+
+**Short Description:**
+
+> A Saudi Arabian multi-vendor fashion platform that allows investors to showcase and sell dresses through a scalable Django backend.
+
+**Responsibilities:**
+
+* Developed the Django backend
+* Supported multi-vendor workflows
+* Supported product and transaction functionality
+* Deployed the project on a VPS
+
+**Technologies:**
+
+* Python
+* Django
+* VPS deployment
+
+Create an editable landing-page link placeholder for `emily.sa`.
+
+Do not add unsupported technologies.
+
+## 7. Speaking Fingers
+
+**Slug:** `speaking-fingers`
+
+**Categories:**
+
+* AI
+* Backend
+* Computer Vision
+* Graduation Project
+
+**Role:** Backend Developer and AI Contributor
+
+**Status:** Completed
+
+**Short Description:**
+
+> An Arabic Sign Language translation system combining computer vision, Django backend services, user authentication, and text-to-speech functionality.
+
+**Responsibilities:**
+
+* Developed the Django backend
+* Integrated AI models
+* Worked with YOLO
+* Worked with CNNs
+* Integrated text-to-speech
+* Implemented authentication
+* Implemented authorization
+* Deployed the application on a VPS
+
+**Technologies:**
+
+* Python
+* Django
+* YOLO
+* CNN
+* Text-to-Speech
+* Computer vision
+* VPS
+
+Add editable placeholders for:
+
+* GitHub repository
+* Demo video
+* Project gallery
+* Research or presentation materials
+
+## Desktop App Projects
+
+Create a Desktop Apps category and reusable project templates for PyQt5 projects.
+
+Do not create fake project names, links, screenshots, metrics, or descriptions.
+
+Use two clearly marked placeholders:
+
+* PyQt5 Project — Add Project Details
+* Desktop System — Add Project Details
+
+Each placeholder should support:
+
+* Project name
+* Short description
+* Full description
+* Platforms
+* Technologies
+* Images
+* Download link
+* GitHub link
+* Demo video
+* Features
+* Technical challenges
+
+Make these placeholder projects easy to replace later.
+
+# Experience Page
+
+Create a professional experience timeline.
+
+## ADEX Jordan Company
+
+**Role:** Python Backend Developer
+**Date:** April 2026 — Present
+**Location:** Remote, Jordan
+**Type:** Full Time
+
+Include:
+
+* Developed Django analytics backend functionality
+* Supported systems handling large sales datasets
+* Contributed to multi-tenant SaaS and delivery products
+* Implemented APIs, tenant isolation, authentication, permissions, and workflows
+* Coordinated with international clients
+
+## Moussa Academy
+
+**Role:** Software Programming Instructor
+**Date:** April 2026 — Present
+**Location:** Remote, Saudi Arabia
+**Type:** Part Time
+
+Include:
+
+* Delivered recorded programming lessons
+* Delivered live group sessions
+* Delivered one-to-one tutoring
+* Prepared educational technical content
+* Helped students improve problem-solving confidence
+
+## Military Service
+
+**Organization:** Egypt Armed Forces
+**Date:** October 2024 — February 2026
+
+Keep this entry visually simple and professional.
+
+## BAGGR
+
+**Role:** Python Backend Developer
+**Date:** April 2024 — October 2024
+**Type:** Remote Full Time
+
+Include verified results and responsibilities.
+
+## Mutqinai
+
+**Role:** Python Developer
+**Date:** January 2024 — April 2024
+**Type:** Hybrid Full Time
+
+Include AI integration, API, deployment, and performance experience.
+
+# Skills Page or Skills Section
+
+Organize skills into groups.
+
+## Backend
+
+* Python
+* Django
+* Django REST Framework
+
+## Databases
+
+* PostgreSQL
+* MySQL
+* MS SQL Server
+
+## Caching and Queues
+
+* Redis
+* Celery
+
+## DevOps and CI/CD
+
+* Docker
+* Docker Compose
+* GitHub Actions
+
+## Cloud and Infrastructure
+
+* AWS EC2
+* Nginx
+* Apache
+* VPS deployment
+
+## Monitoring
+
+* Grafana
+* Prometheus
+
+## Security
+
+* OAuth 2.0
+* JWT
+* GDPR-compliant authentication
+
+## Machine Learning
+
+* Regression algorithms
+* Classification algorithms
+* Time-series forecasting
+
+## Deep Learning
+
+* CNNs
+* Image classification
+* Transfer learning
+* Action detection
+
+## Version Control
+
+* Git
+* GitHub
+
+## Desktop Development
+
+Add PyQt5 based on Youssif’s stated expertise.
+
+Do not attach unsupported proficiency percentages.
+
+Use experience-level labels only if they remain editable.
+
+# Achievements Section
+
+Create a visually strong achievements section.
+
+Include:
+
+## Kaggle Notebooks Master
+
+> Ranked 61st globally out of more than 312,000 developers.
+
+## NASA Space Apps Cairo
+
+> Reached the national final with a project focused on endangered marine-organism conservation.
+
+## IEEE Xtreme
+
+> Ranked among the top 20 teams in Egypt in the international IEEE Xtreme problem-solving competition.
+
+## Annual Student Conference — Applied Sciences
+
+> Awarded first place for research on Arabic Sign Language recognition and speech generation using CNNs and YOLO.
+
+Use icons, ranking cards, or a trophy-inspired layout.
+
+Keep the style professional and avoid gaming-style achievement visuals.
+
+# Education Section
+
+Display:
+
+**Bachelor of Computer Science**
+
+Benha University
+
+2020 — 2024
+
+# International Experience
+
+Create a small section or visual map showing experience delivering systems for clients or products connected to:
+
+* United States
+* Saudi Arabia
+* Jordan
+* Qatar
+
+Keep Egypt as the home location.
+
+Use a subtle world-map or connected-node design.
+
+Do not claim physical work locations where the work was remote.
+
+# About Page
+
+Use a structured professional story.
+
+Sections:
+
+* Professional introduction
+* Why Python
+* Why Django backend engineering
+* Backend engineering approach
+* Desktop development experience
+* DevOps and deployment experience
+* AI and research experience
+* Teaching and communication
+* Achievements
+* Education
+
+Add a small code-inspired identity card:
+
+```python
+developer = {
+    "name": "Youssif Hassan",
+    "primary_role": "Python Backend Developer",
+    "main_framework": "Django",
+    "desktop": "PyQt5",
+    "experience": "2.5+ years",
+    "location": "Cairo, Egypt"
+}
+```
+
+# Contact Page
+
+Create a professional contact page.
+
+Use this heading:
+
+> Let’s build a reliable Python system.
+
+Supporting text:
+
+> Contact me about Django backend development, REST APIs, desktop applications, DevOps deployment, AI integrations, or technical collaboration.
+
+Display:
+
+* Email
+* Location
+* LinkedIn
+* GitHub
+* Download CV
+
+Create a contact form with:
+
+* Name
+* Email
+* Company
+* Project type
+* Budget range
+* Message
+
+Project type options:
+
+* Django Backend
+* REST API
+* PyQt5 Desktop Application
+* Full-Stack Product
+* DevOps and Deployment
+* AI Integration
+* Technical Consultation
+* Other
+
+Create:
+
+* Loading state
+* Validation state
+* Success state
+* Error state
+
+# Footer
+
+Include:
+
+* Youssif Hassan
+* Python Backend Developer
+* Navigation links
+* Social links
+* Email
+* Current year
+* Built with Python-inspired design language
+
+Optional footer text:
+
+> Designed around Python. Engineered for clarity.
+
+# Reusable Components
+
+Create reusable components for:
+
+* Navigation
+* Footer
+* Buttons
+* Project cards
+* Featured project card
+* Category filters
+* Search field
+* Technology badges
+* Status badges
+* Metric cards
+* Experience timeline
+* Architecture diagrams
+* Gallery
+* Lightbox
+* Link buttons
+* Achievement cards
+* Contact form
+* Empty states
+* Loading states
+* Error states
+
+# Project Data Structure
+
+Use a scalable data structure such as:
+
+```javascript
+{
+  id: 1,
+  slug: "project-slug",
+  name: "Project Name",
+  subtitle: "Project subtitle",
+  shortDescription: "Description displayed in three lines",
+  fullDescription: "Full structured description",
+  categories: ["Backend", "AI"],
+  featured: true,
+  biggestProject: false,
+  confidential: false,
+  company: "Company Name",
+  year: "2026",
+  startDate: "2026-01",
+  endDate: null,
+  status: "Production",
+  role: "Python Backend Developer",
+  projectType: "Commercial Product",
+  coverImage: null,
+  images: [
+    {
+      src: null,
+      caption: "Replace with project image",
+      type: "dashboard"
+    }
+  ],
+  technologies: [],
+  features: [],
+  responsibilities: [],
+  challenges: [
+    {
+      title: "",
+      problem: "",
+      approach: "",
+      solution: "",
+      result: ""
+    }
+  ],
+  metrics: [],
+  links: [
+    {
+      type: "landing-page",
+      label: "Visit Landing Page",
+      url: ""
+    }
+  ]
+}
+```
+
+Do not render empty links on the interface.
+
+Do not render an empty metrics section.
+
+Do not render an empty gallery after real data is connected.
+
+# Accessibility
+
+Include:
+
+* Semantic page structure
+* Correct heading hierarchy
+* Accessible color contrast
+* Keyboard navigation
+* Visible focus states
+* Alternative image text
+* Accessible forms
+* Proper button labels
+* Reduced-motion support
+* Accessible lightbox controls
+
+# Animation Style
+
+Use subtle professional animations only:
+
+* Fade and slide on scroll
+* Smooth project filtering
+* Architecture connection animation
+* Project card elevation
+* Image-gallery transitions
+* Button-arrow movement
+* Single-run terminal typing animation
+* Small status-indicator pulse
+
+Respect reduced-motion settings.
+
+# Final Output Requirements
+
+Generate a complete clickable prototype with:
+
+* Full desktop layout
+* Full mobile layout
+* Working navigation
+* Project filters
+* Project search
+* Project sorting
+* Real project content from the supplied data
+* Three-line project descriptions
+* Featured case-study page
+* Dynamic project-detail pages
+* Multiple project link types
+* Project image galleries
+* Lightbox
+* Experience timeline
+* Skills section
+* Achievements section
+* About page
+* Contact page
+* Loading states
+* Empty states
+* Error states
+* Confidential-project state
+* Hover and focus interactions
+
+Use realistic interface copy from the provided information.
+
+Do not invent:
+
+* Project links
+* Repository URLs
+* Store URLs
+* Client screenshots
+* Project dates not provided
+* Unsupported technologies
+* Unsupported performance metrics
+* User counts
+* Revenue
+* Download counts
+* Confidential client information
+
+Use clearly labeled editable placeholders whenever information is missing.
+
+The final result should look like the portfolio of an experienced Python backend engineer who can take ownership of architecture, development, deployment, monitoring, AI integration, and production delivery.

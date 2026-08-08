@@ -1,0 +1,10 @@
+{
+  "description": "Streamline project creation with an intuitive tool designed to help users quickly build and manage their ideas efficiently in one platform.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
