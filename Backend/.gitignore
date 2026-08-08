@@ -1,0 +1,44 @@
+venv/
+Venv/
+db.sqlite3
+__pycache__/
+__pycache__
+/__pycache__
+*.pyc
+
+media/
+media/*
+!media/.gitkeep
+staticfiles
+desktop.ini
+celerybeat-schedule
+.mypy_cache
+celery_db
+data
+db_volume
+debug.log
+volumes
+code
+venv
+backend_venv
+
+
+# LOGS/*
+!LOGS/.gitkeep
+django.log
+debug.log
+cacheops.log
+
+build
+dist
+/.spec
+
+# Migrations are COMMITTED on purpose. They are part of the schema's history: without them a
+# second clone cannot reproduce the database, and two developers generate conflicting ones.
+
+.env.local
+.env.prod
+.env.test
+.env
+
+myenv

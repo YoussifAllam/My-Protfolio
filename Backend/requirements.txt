@@ -1,0 +1,43 @@
+# Core
+Django==5.2.14
+djangorestframework==3.15.2
+djangorestframework_simplejwt==5.5.0
+PyJWT==2.9.0
+django-environ==0.11.2
+python-dotenv==1.0.1
+python-dateutil==2.9.0.post0
+
+# Database
+psycopg[binary]==3.2.3
+
+# Shared cache — required for correct throttling once more than one worker runs.
+redis==5.2.1
+
+# API
+django-cors-headers==4.4.0
+django-filter==25.1
+drf-api-logger==1.1.19
+requests==2.32.3
+
+# Admin
+django-unfold==0.40.0
+django-ckeditor-5==0.2.13
+
+# Serving
+daphne==4.1.2
+whitenoise==6.9.0
+
+# Models / file handling
+uuid6==2024.7.10
+pillow>=11.0
+pikepdf==9.4.0
+
+# Password hashers used by config/django/production.py
+argon2-cffi==23.1.0
+bcrypt==4.2.1
+
+# Dev / test
+django-debug-toolbar==4.4.6
+pytest==8.3.4
+pytest-django==4.9.0
+flake8==7.1.1
