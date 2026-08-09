@@ -1,0 +1,33 @@
+# Install to /etc/systemd/system/portfolio-backend.service, then:
+#   sudo systemctl daemon-reload && sudo systemctl enable --now portfolio-backend
+# Mirrors the sibling pos-backend.service on the same VPS.
+
+[Unit]
+Description=Portfolio Django backend (Gunicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=portfolio
+Group=portfolio
+WorkingDirectory=/srv/portfolio/app/Backend
+
+# Settings dispatch: config.django reads ENVIRONMENT to pick production.py,
+# which loads Backend/ENV/.env.Production.
+Environment=ENVIRONMENT=Production
+Environment=DJANGO_SETTINGS_MODULE=config.django
+
+ExecStart=/srv/portfolio/venv/bin/gunicorn config.wsgi:application \
+    -c /srv/portfolio/app/deploy/gunicorn.conf.py
+
+Restart=always
+RestartSec=3
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/srv/portfolio/data /srv/portfolio/app/Backend/staticfiles
+
+[Install]
+WantedBy=multi-user.target

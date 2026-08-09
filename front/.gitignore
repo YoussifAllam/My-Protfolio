@@ -3,6 +3,9 @@ dist/
 build/
 .cache/
 .env*
+# .env.production has no secrets — just the public API origin — and is
+# committed intentionally so a production build is reproducible.
+!.env.production
 .vite/
 vite.config.*.timestamp-*
 *.tsbuildinfo
