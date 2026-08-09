@@ -117,16 +117,21 @@ export default function Contact() {
     }
   };
 
+  // The focus border used to live only in the non-error branch below, so an
+  // invalid field had NO visible focus indicator at all — precisely the field
+  // a keyboard user is sent back to. `focus:border-[#4B9CD3]` now applies
+  // unconditionally, and `focus:outline-none` is gone entirely so the global
+  // :focus-visible ring (index.css) shows through on every field.
   const inputClass = (field: keyof FormData) =>
     `w-full bg-[#111827] border ${
-      errors[field] ? "border-red-500/60" : "border-[#243044] focus:border-[#3776AB]"
-    } text-[#F8FAFC] placeholder-[#64748B] text-sm px-3.5 py-2.5 rounded-lg focus:outline-none transition-colors`;
+      errors[field] ? "border-red-400/70" : "border-[#243044]"
+    } focus:border-[#4B9CD3] text-[#F8FAFC] placeholder-[#7C8BA3] text-sm px-3.5 py-2.5 rounded-lg transition-colors`;
 
   return (
     <main className="pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-12">
-        <p className="font-mono text-xs text-[#3776AB] mb-2">// contact</p>
+        <p className="font-mono text-xs text-[#4B9CD3] mb-2">// contact</p>
         <h1 className="text-3xl sm:text-4xl font-bold text-[#F8FAFC] mb-3">
           {"Let's build a reliable Python system."}
         </h1>
@@ -142,7 +147,7 @@ export default function Contact() {
           <div className="space-y-6">
             {/* Email */}
             <div className="bg-[#111827] border border-[#243044] rounded-xl p-4">
-              <p className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider mb-2">Email</p>
+              <p className="font-mono text-2xs text-[#7C8BA3] uppercase tracking-wider mb-2">Email</p>
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
                 className="text-sm text-[#4B9CD3] hover:text-[#F8FAFC] transition-colors break-all"
@@ -153,14 +158,14 @@ export default function Contact() {
 
             {/* Location */}
             <div className="bg-[#111827] border border-[#243044] rounded-xl p-4">
-              <p className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider mb-2">Location</p>
+              <p className="font-mono text-2xs text-[#7C8BA3] uppercase tracking-wider mb-2">Location</p>
               <p className="text-sm text-[#94A3B8]">{LOCATION}</p>
-              <p className="text-xs font-mono text-[#64748B] mt-0.5">Available for remote work worldwide</p>
+              <p className="text-xs font-mono text-[#7C8BA3] mt-0.5">Available for remote work worldwide</p>
             </div>
 
             {/* Social / profile links */}
             <div className="bg-[#111827] border border-[#243044] rounded-xl p-4">
-              <p className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider mb-3">
+              <p className="font-mono text-2xs text-[#7C8BA3] uppercase tracking-wider mb-3">
                 Profiles
               </p>
               <ul className="flex flex-col gap-2" role="list">
@@ -195,7 +200,7 @@ export default function Contact() {
             {/* Status */}
             <div className="flex items-center gap-2 pt-2">
               <span className="w-2 h-2 rounded-full bg-[#22C55E] status-pulse" aria-hidden="true" />
-              <span className="text-xs font-mono text-[#64748B]">Available for new projects</span>
+              <span className="text-xs font-mono text-[#7C8BA3]">Available for new projects</span>
             </div>
           </div>
         </aside>
@@ -349,14 +354,14 @@ export default function Contact() {
                   <div className="flex flex-wrap items-center gap-2">
                     <a
                       href={mailtoFallback(form)}
-                      className="px-4 py-2 bg-[#3776AB] hover:bg-[#4B9CD3] text-white text-sm font-medium rounded-lg transition-colors"
+                      className="px-4 py-2 bg-[#3776AB] hover:bg-[#4B9CD3] active:brightness-95 active:scale-[0.98] text-white text-sm font-medium rounded-lg transition-colors"
                     >
                       Email it instead
                     </a>
                     <button
                       type="button"
                       onClick={copyEmail}
-                      className="px-4 py-2 border border-[#243044] hover:border-[#3776AB] text-[#94A3B8] hover:text-[#F8FAFC] text-sm font-medium rounded-lg transition-all"
+                      className="px-4 py-2 border border-[#243044] hover:border-[#3776AB] active:bg-[#111827] text-[#94A3B8] hover:text-[#F8FAFC] text-sm font-medium rounded-lg transition-all"
                     >
                       {copied ? "Address copied" : `Copy ${CONTACT_EMAIL}`}
                     </button>
@@ -367,7 +372,7 @@ export default function Contact() {
               <button
                 type="submit"
                 disabled={formState === "loading"}
-                className="w-full sm:w-auto px-8 py-3 bg-[#3776AB] hover:bg-[#4B9CD3] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold text-sm rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-3 bg-[#3776AB] hover:bg-[#4B9CD3] active:brightness-95 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100 text-white font-semibold text-sm rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 {formState === "loading" ? (
                   <>

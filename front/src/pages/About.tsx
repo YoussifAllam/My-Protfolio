@@ -45,7 +45,7 @@ const SECTIONS = [
 ];
 
 const achievementColors = {
-  yellow: { border: "border-[#FFD343]/20", bg: "bg-[#FFD343]/5", text: "text-[#FFD343]" },
+  yellow: { border: "border-[#44B78B]/20", bg: "bg-[#44B78B]/5", text: "text-[#44B78B]" },
   blue: { border: "border-[#3776AB]/30", bg: "bg-[#3776AB]/8", text: "text-[#4B9CD3]" },
   green: { border: "border-[#44B78B]/20", bg: "bg-[#44B78B]/5", text: "text-[#44B78B]" },
 };
@@ -55,14 +55,14 @@ export default function About() {
     <main className="pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
       {/* Header */}
       <div className="mb-12">
-        <p className="font-mono text-xs text-[#3776AB] mb-2">// about</p>
+        <p className="font-mono text-xs text-[#4B9CD3] mb-2">// about</p>
         <h1 className="text-3xl sm:text-4xl font-bold text-[#F8FAFC] mb-4">
           About Youssif Hassan
         </h1>
 
         {/* Identity card */}
         <div className="bg-[#0B1120] border border-[#243044] rounded-xl p-5 font-mono text-sm max-w-md mb-8">
-          <div className="text-[#64748B] mb-2 text-xs">// developer.py</div>
+          <div className="text-[#7C8BA3] mb-2 text-xs">// developer.py</div>
           <div className="text-[#94A3B8]">developer <span className="text-[#FFD343]">=</span> {"{"}</div>
           {[
             ["name", '"Youssif Hassan"'],
@@ -74,9 +74,9 @@ export default function About() {
           ].map(([k, v]) => (
             <div key={k} className="pl-4">
               <span className="text-[#4B9CD3]">"{k}"</span>
-              <span className="text-[#64748B]">: </span>
+              <span className="text-[#7C8BA3]">: </span>
               <span className="text-[#22C55E]">{v}</span>
-              <span className="text-[#64748B]">,</span>
+              <span className="text-[#7C8BA3]">,</span>
             </div>
           ))}
           <div className="text-[#94A3B8]">{"}"}</div>
@@ -117,7 +117,7 @@ export default function About() {
                   </div>
                 </div>
                 <p className="text-sm text-[#94A3B8] leading-relaxed">{ach.description}</p>
-                <p className="font-mono text-[10px] text-[#64748B] mt-2">{ach.detail}</p>
+                <p className="font-mono text-2xs text-[#7C8BA3] mt-2">{ach.detail}</p>
               </article>
             );
           })}
@@ -136,7 +136,7 @@ export default function About() {
               <h3 className="font-semibold text-[#F8FAFC] mb-0.5">Bachelor of Computer Science</h3>
               <p className="text-sm text-[#94A3B8]">Benha University</p>
             </div>
-            <span className="font-mono text-xs text-[#64748B] whitespace-nowrap">2020 — 2024</span>
+            <span className="font-mono text-xs text-[#7C8BA3] whitespace-nowrap">2020 — 2024</span>
           </div>
         </div>
       </section>
@@ -148,7 +148,7 @@ export default function About() {
           International Experience
         </h2>
         <div className="bg-[#0B1120] border border-[#243044] rounded-xl p-6">
-          <p className="text-sm text-[#64748B] font-mono mb-5">// remote delivery for clients and products across</p>
+          <p className="text-sm text-[#7C8BA3] font-mono mb-5">// remote delivery for clients and products across</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
               { country: "Jordan", detail: "ADEX — Current employer", home: false },
@@ -166,13 +166,13 @@ export default function About() {
               >
                 <div className={`font-semibold text-sm mb-1 ${home ? "text-[#4B9CD3]" : "text-[#F8FAFC]"}`}>
                   {country}
-                  {home && <span className="ml-1 text-[10px] font-mono text-[#3776AB]">home</span>}
+                  {home && <span className="ml-1 text-2xs font-mono text-[#4B9CD3]">home</span>}
                 </div>
-                <div className="text-[10px] text-[#64748B] leading-snug">{detail}</div>
+                <div className="text-2xs text-[#7C8BA3] leading-snug">{detail}</div>
               </div>
             ))}
           </div>
-          <p className="text-xs font-mono text-[#64748B] mt-4 text-center">
+          <p className="text-xs font-mono text-[#7C8BA3] mt-4 text-center">
             * All international work was delivered remotely unless otherwise noted.
           </p>
         </div>

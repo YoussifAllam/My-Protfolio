@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { projects, CATEGORIES, type Project } from "../data/projects";
 import ProjectCard from "../components/ProjectCard";
+import { useReveal } from "../hooks/useReveal";
 
 type SortKey = "featured" | "newest" | "oldest" | "alpha";
 
@@ -18,6 +19,7 @@ export default function Projects() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortKey>("featured");
+  const gridRef = useReveal<HTMLDivElement>({ group: true });
 
   const filtered = useMemo(() => {
     const list = projects.filter((p) => {
@@ -48,7 +50,7 @@ export default function Projects() {
     <main className="pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-10">
-        <p className="font-mono text-xs text-[#3776AB] mb-2">// projects</p>
+        <p className="font-mono text-xs text-[#4B9CD3] mb-2">// projects</p>
         <h1 className="text-3xl sm:text-4xl font-bold text-[#F8FAFC] mb-3">Projects</h1>
         <p className="text-[#94A3B8] max-w-xl">
           Production backend systems, scalable platforms, AI-powered products, full-stack
@@ -68,7 +70,7 @@ export default function Projects() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 active:scale-[0.96] ${
                 activeCategory === cat
                   ? "bg-[#3776AB] text-white border border-[#3776AB]"
                   : "bg-[#111827] text-[#94A3B8] border border-[#243044] hover:border-[#3776AB]/50 hover:text-[#F8FAFC]"
@@ -77,7 +79,7 @@ export default function Projects() {
             >
               {cat}
               <span
-                className={`font-mono text-[10px] ${activeCategory === cat ? "text-white/70" : "text-[#64748B]"}`}
+                className={`font-mono text-2xs ${activeCategory === cat ? "text-white/70" : "text-[#7C8BA3]"}`}
               >
                 {categoryCounts[cat] ?? 0}
               </span>
@@ -89,7 +91,7 @@ export default function Projects() {
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as SortKey)}
-          className="bg-[#111827] border border-[#243044] text-[#94A3B8] text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-[#3776AB] appearance-none min-w-[140px]"
+          className="bg-[#111827] border border-[#243044] text-[#94A3B8] text-sm rounded-lg px-3 py-2 focus:border-[#3776AB] appearance-none min-w-[140px]"
           aria-label="Sort projects"
         >
           <option value="featured">Featured</option>
@@ -102,7 +104,7 @@ export default function Projects() {
       {/* Search */}
       <div className="relative mb-8">
         <svg
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B]"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7C8BA3]"
           width="16"
           height="16"
           viewBox="0 0 20 20"
@@ -116,13 +118,13 @@ export default function Projects() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search projects, technologies, or solutions..."
-          className="w-full bg-[#111827] border border-[#243044] text-[#F8FAFC] pl-10 pr-4 py-2.5 rounded-lg text-sm placeholder-[#64748B] focus:outline-none focus:border-[#3776AB] transition-colors"
+          className="w-full bg-[#111827] border border-[#243044] text-[#F8FAFC] pl-10 pr-4 py-2.5 rounded-lg text-sm placeholder-[#7C8BA3] focus:border-[#3776AB] transition-colors"
           aria-label="Search projects"
         />
       </div>
 
       {/* Count */}
-      <p className="text-xs font-mono text-[#64748B] mb-6">
+      <p className="text-xs font-mono text-[#7C8BA3] mb-6">
         Showing {filtered.length} project{filtered.length !== 1 ? "s" : ""}
         {activeCategory !== "All" ? ` in ${activeCategory}` : ""}
         {search ? ` matching "${search}"` : ""}
@@ -130,7 +132,7 @@ export default function Projects() {
 
       {/* Grid */}
       {filtered.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {filtered.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
@@ -138,7 +140,7 @@ export default function Projects() {
       ) : (
         /* Empty state */
         <div className="text-center py-20 border border-dashed border-[#243044] rounded-xl">
-          <div className="font-mono text-[#64748B] text-sm mb-2">
+          <div className="font-mono text-[#7C8BA3] text-sm mb-2">
             # No projects match your current filters.
           </div>
           <p className="text-[#94A3B8] text-sm mb-6">
@@ -146,7 +148,7 @@ export default function Projects() {
           </p>
           <button
             onClick={() => { setActiveCategory("All"); setSearch(""); }}
-            className="px-4 py-2 text-sm bg-[#172033] border border-[#243044] hover:border-[#3776AB] text-[#94A3B8] hover:text-[#F8FAFC] rounded-lg transition-all"
+            className="px-4 py-2 text-sm bg-[#172033] border border-[#243044] hover:border-[#3776AB] active:bg-[#080D18] text-[#94A3B8] hover:text-[#F8FAFC] rounded-lg transition-all"
           >
             Clear Filters
           </button>

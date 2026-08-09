@@ -17,7 +17,7 @@ export default function RouteError() {
   return (
     <main className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-[#080D18]">
       <div className="max-w-xl w-full">
-        <p className="font-mono text-xs text-[#3776AB] mb-3">// unhandled exception</p>
+        <p className="font-mono text-xs text-[#4B9CD3] mb-3">// unhandled exception</p>
         <h1 className="text-3xl sm:text-4xl font-bold text-[#F8FAFC] mb-4">
           Something broke on this page.
         </h1>

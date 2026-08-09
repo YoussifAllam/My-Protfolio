@@ -3,34 +3,119 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
 
-  --color-bg-base: #080D18;
-  --color-bg-secondary: #0B1120;
-  --color-card: #111827;
-  --color-card-elevated: #172033;
-  --color-border: #243044;
-  --color-border-subtle: #1a2538;
+  /* ═══════════════════════════════════════════════════════════════════════
+     SURFACES — one axis, darkest to lightest.
+     Never nest a surface inside itself.
+     ═══════════════════════════════════════════════════════════════════════ */
+  --color-canvas: #080D18;   /* the page                                    */
+  --color-sunken: #0B1120;   /* recessed bands, terminals, code panels      */
+  --color-surface: #111827;  /* the default card                            */
+  --color-raised: #172033;   /* a card that outranks its neighbours         */
 
-  --color-py-blue: #3776AB;
-  --color-py-blue-bright: #4B9CD3;
-  --color-py-yellow: #FFD343;
-  --color-dj-dark: #0C4B33;
-  --color-dj-green: #44B78B;
+  /* Borders: `line` for real edges, `line-soft` for dividers inside an
+     already-bordered box. */
+  --color-line: #243044;
+  --color-line-soft: #1A2538;
 
-  --color-text-primary: #F8FAFC;
-  --color-text-secondary: #94A3B8;
-  --color-text-muted: #64748B;
-  --color-text-accent: #4B9CD3;
+  /* ═══════════════════════════════════════════════════════════════════════
+     BRAND — each colour carries a usage rule, because the contrast maths
+     makes misuse invisible until an audit catches it. Ratios vs --color-canvas.
 
-  --color-success: #22C55E;
-  --color-warning: #F59E0B;
+     `python` is 4.02:1 — BELOW the 4.5:1 AA threshold for text. It may be
+     used as bg-python / border-python / SVG fill|stroke, and NEVER as a
+     text colour. If you reach for `text-python`, you wanted `text-accent`.
 
+     `signal` is 13.57:1 — louder than django green (7.77) and more than
+     twice as loud as accent blue (6.48). That is exactly why seven amber
+     metrics read as an alert dashboard. Budget: at most ONE amber element
+     visible in any viewport. Not one per section — one.
+     ═══════════════════════════════════════════════════════════════════════ */
+  --color-python: #3776AB;       /* fill / border / SVG only       4.02:1 */
+  --color-accent: #4B9CD3;       /* the only blue for text         6.48:1 */
+  --color-django: #44B78B;       /* Django, production, live       7.77:1 */
+  --color-django-deep: #0C4B33;  /* fill only                             */
+  --color-signal: #FFD343;       /* ONE per viewport              13.57:1 */
+  --color-caution: #F59E0B;
+  --color-danger: #F87171;
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     TEXT — three tiers, no more. A fourth means the layout is wrong.
+     ═══════════════════════════════════════════════════════════════════════ */
+  --color-ink: #F8FAFC;        /* headings, values, answers        18.9:1 */
+  --color-ink-muted: #94A3B8;  /* body, descriptions                7.4:1 */
+  /* Was #64748B, which measured 4.08:1 on canvas and 3.73:1 on a card —
+     failing AA on both, at the 11px sizes it is mostly used at. #7C8BA3
+     passes both (5.62 / 5.14) and stays clearly darker than ink-muted, so
+     the three-tier ramp survives. #64748B remains valid for dots and rules,
+     where the text contrast rule does not apply. */
+  --color-ink-faint: #7C8BA3;  /* labels, metadata           5.62 / 5.14:1 */
+  --color-hairline: #64748B;   /* non-text only: dots, rules              */
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     TYPE — additive tiers only.
+
+     The existing steps (text-xs … text-5xl) deliberately keep Tailwind's
+     defaults here so this commit is provably a no-op. Their line-heights
+     and tracking are tuned in the type pass, where the pixel movement is
+     expected and screenshot-verified.
+
+     `--text-lead` (18px) is the tier the site never had: with 48px, 30px,
+     and then nothing until 14px, every page reads flat.
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  /* 11px — mono micro-labels ONLY (badges, chips, node labels).
+     Never sans, never a full sentence. */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-2xs--letter-spacing: 0.02em;
+
+  /* 18px — page deks, hero support copy, prominent card titles. */
+  --text-lead: 1.125rem;
+  --text-lead--line-height: 1.75rem;
+  --text-lead--letter-spacing: -0.011em;
+
+  /* 28 → 40px — interior page h1, featured card title. */
+  --text-display-sm: clamp(1.75rem, 1.15rem + 2.4vw, 2.5rem);
+  --text-display-sm--line-height: 1.1;
+  --text-display-sm--letter-spacing: -0.028em;
+  --text-display-sm--font-weight: 700;
+
+  /* 36 → 56px — the value proposition. Exactly one element wears this. */
+  --text-display: clamp(2.25rem, 1.35rem + 3.8vw, 3.5rem);
+  --text-display--line-height: 1.04;
+  --text-display--letter-spacing: -0.032em;
+  --text-display--font-weight: 700;
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     RADII — a real ladder. Previously `2xl` was undefined, so it silently
+     resolved to Tailwind's 16px default and was indistinguishable from `xl`.
+       sm  chips, badges, micro-controls
+       lg  buttons, inputs, small controls
+       xl  cards
+       2xl hero surfaces and page-level panels
+     ═══════════════════════════════════════════════════════════════════════ */
   --radius-sm: 4px;
   --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 20px;
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     MOTION — four tiers. micro = colour/opacity, base = transform/border,
+     reveal = scroll entry, ambient = continuous loops.
+     ═══════════════════════════════════════════════════════════════════════ */
+  --ease-out-quart: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-press: 90ms;
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-reveal: 420ms;
+  --duration-ambient: 2400ms;
+
+  --shadow-lift: 0 8px 24px rgb(0 0 0 / 0.35);
 }
 
 * {
@@ -98,11 +183,6 @@ body {
   100% { offset-distance: 100%; opacity: 0; }
 }
 
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.85); }
-}
-
 @keyframes status-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
   50% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
@@ -121,11 +201,6 @@ body {
 @keyframes terminal-cursor {
   0%, 49% { opacity: 1; }
   50%, 100% { opacity: 0; }
-}
-
-@keyframes slide-in-right {
-  from { opacity: 0; transform: translateX(20px); }
-  to { opacity: 1; transform: translateX(0); }
 }
 
 .animate-fade-up {
@@ -164,37 +239,79 @@ body {
   overflow: hidden;
 }
 
-/* Indentation line decoration */
-.indent-line::before {
-  content: '';
-  display: inline-block;
-  width: 2px;
-  height: 100%;
-  background: #3776AB;
-  margin-right: 12px;
-  vertical-align: middle;
-  border-radius: 1px;
+/* Project signature — ambient drift on the connectors. Pure CSS: no JS timer,
+   no state, nothing that can desync. dasharray period is 6, so -12 loops
+   seamlessly. */
+@keyframes sig-drift {
+  to {
+    stroke-dashoffset: -12;
+  }
 }
 
-/* Architecture node glow */
-.node-glow {
-  box-shadow: 0 0 20px rgba(55, 118, 171, 0.2), 0 0 40px rgba(55, 118, 171, 0.1);
+.sig-link {
+  stroke-dasharray: 3 3;
+  animation: sig-drift var(--duration-ambient) linear infinite;
 }
 
-.node-glow-yellow {
-  box-shadow: 0 0 20px rgba(255, 211, 67, 0.15);
+@media (prefers-reduced-motion: reduce) {
+  .sig-link {
+    animation: none;
+  }
 }
 
-.node-glow-green {
-  box-shadow: 0 0 20px rgba(68, 183, 139, 0.2);
-}
-
-/* Card hover transition */
+/* Card hover lift is a pointer affordance, not a touch one — without the
+   media query a tap leaves a card stuck in its hover state until the next
+   tap elsewhere. */
 .project-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform var(--duration-base) var(--ease-out-quart),
+    box-shadow var(--duration-base) var(--ease-out-quart),
+    border-color var(--duration-fast) var(--ease-standard);
+}
+@media (hover: hover) and (pointer: fine) {
+  .project-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(75, 156, 211, 0.3);
+  }
+}
+.project-card:active {
+  transform: translateY(-1px) scale(0.995);
+  transition-duration: var(--duration-press);
 }
 
-.project-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(75, 156, 211, 0.3);
+/* ── Scroll reveal ──────────────────────────────────────────────────────
+   Nothing here hides content by default: [data-reveal="pending"] is only
+   ever set by useReveal, which bails out entirely when IntersectionObserver
+   is unavailable or reduced motion is requested. If the hook never runs,
+   this attribute never exists, and nothing is hidden. */
+[data-reveal="pending"] {
+  opacity: 0;
+  transform: translateY(14px);
+}
+[data-reveal="pending"][data-reveal-group] > * {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+[data-reveal="in"] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--duration-reveal) var(--ease-out-quart) var(--reveal-delay, 0ms),
+    transform var(--duration-reveal) var(--ease-out-quart) var(--reveal-delay, 0ms);
+}
+[data-reveal="in"][data-reveal-group] > * {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--duration-reveal) var(--ease-out-quart) var(--reveal-delay, 0ms),
+    transform var(--duration-reveal) var(--ease-out-quart) var(--reveal-delay, 0ms);
+}
+
+/* ── Press feedback ─────────────────────────────────────────────────────
+   On touch, :hover never fires — before this there was zero feedback
+   between a tap and the resulting navigation, anywhere in the app. */
+a, button, [role="button"], summary {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }

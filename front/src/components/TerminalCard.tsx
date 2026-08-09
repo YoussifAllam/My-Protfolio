@@ -1,42 +1,39 @@
 import { useEffect, useState } from "react";
 
+/**
+ * Trimmed from five fact pairs to three: `experience` is stated in the hero
+ * copy and `additional_expertise` is what the Core Specializations section is
+ * for. The same five facts used to appear four times on the Home page.
+ */
 const LINES = [
   { prompt: true, text: "whoami" },
   { prompt: false, text: "Youssif Hassan — Python Backend Developer" },
-  { prompt: true, text: "experience" },
-  { prompt: false, text: "2.5+ years" },
   { prompt: true, text: "main_specialization" },
   { prompt: false, text: "Django · DRF · PostgreSQL · Redis · Celery" },
-  { prompt: true, text: "additional_expertise" },
-  { prompt: false, text: "PyQt5 · DevOps · AI · Machine Learning" },
   { prompt: true, text: "location" },
-  { prompt: false, text: "Cairo, Egypt" },
+  { prompt: false, text: "Cairo, Egypt · available remote" },
 ];
 
 export default function TerminalCard() {
-  const [visibleLines, setVisibleLines] = useState<number>(0);
-  const [done, setDone] = useState(false);
+  const [visibleLines, setVisibleLines] = useState(0);
 
   useEffect(() => {
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reducedMotion) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setVisibleLines(LINES.length);
-      setDone(true);
       return;
     }
 
     let current = 0;
-    const delays = LINES.map((_, i) => (i === 0 ? 400 : i % 2 === 0 ? 280 : 120));
     let timeout: ReturnType<typeof setTimeout>;
 
     const showNext = () => {
-      if (current >= LINES.length) {
-        setDone(true);
-        return;
-      }
+      if (current >= LINES.length) return;
       current += 1;
       setVisibleLines(current);
-      timeout = setTimeout(showNext, delays[current] ?? 200);
+      // Read the delay for the line just shown — this indexed `current` after
+      // incrementing, so the first delay was skipped and the last was undefined.
+      const next = current % 2 === 0 ? 280 : 120;
+      timeout = setTimeout(showNext, next);
     };
 
     timeout = setTimeout(showNext, 600);
@@ -47,23 +44,25 @@ export default function TerminalCard() {
     <div
       className="bg-[#080D18] border border-[#243044] rounded-xl overflow-hidden font-mono"
       role="region"
-      aria-label="Developer profile terminal"
+      aria-label="Developer profile"
     >
-      {/* Terminal title bar */}
+      {/* Title bar. The macOS traffic lights that used to sit here are the
+          single most template-looking element a developer portfolio can carry —
+          and three off-palette colours besides. */}
       <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[#243044] bg-[#0B1120]">
-        <span className="w-3 h-3 rounded-full bg-[#FF5F56]" aria-hidden="true" />
-        <span className="w-3 h-3 rounded-full bg-[#FFBD2E]" aria-hidden="true" />
-        <span className="w-3 h-3 rounded-full bg-[#27C93F]" aria-hidden="true" />
-        <span className="ml-3 text-xs text-[#64748B]">youssif@python-backend ~ zsh</span>
+        <span className="w-1.5 h-1.5 rounded-full bg-[#44B78B]" aria-hidden="true" />
+        <span className="text-xs text-[#7C8BA3]">youssif@python-backend ~ zsh</span>
       </div>
 
-      {/* Content */}
-      <div className="p-5 space-y-1.5" aria-live="polite" aria-label="Terminal output">
+      {/* The animated region is decorative — it announced all ten lines one at
+          a time to screen readers. The same facts are exposed once, statically,
+          in the sr-only block below. */}
+      <div className="p-5 space-y-1.5" aria-hidden="true">
         {LINES.slice(0, visibleLines).map((line, i) => (
           <div key={i} className="text-sm leading-relaxed">
             {line.prompt ? (
               <span>
-                <span className="text-[#22C55E]">$ </span>
+                <span className="text-[#44B78B]">$ </span>
                 <span className="text-[#4B9CD3]">{line.text}</span>
               </span>
             ) : (
@@ -71,22 +70,17 @@ export default function TerminalCard() {
             )}
           </div>
         ))}
-
-        {/* Cursor */}
-        {!done && (
-          <div className="text-sm">
-            <span className="text-[#22C55E]">$ </span>
-            <span className="terminal-cursor" aria-hidden="true" />
-          </div>
-        )}
-
-        {done && (
-          <div className="text-sm">
-            <span className="text-[#22C55E]">$ </span>
-            <span className="terminal-cursor" aria-hidden="true" />
-          </div>
-        )}
+        <div className="text-sm">
+          <span className="text-[#44B78B]">$ </span>
+          <span className="terminal-cursor" />
+        </div>
       </div>
+
+      <ul className="sr-only">
+        {LINES.filter((l) => !l.prompt).map((l) => (
+          <li key={l.text}>{l.text}</li>
+        ))}
+      </ul>
     </div>
   );
 }

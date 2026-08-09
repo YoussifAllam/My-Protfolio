@@ -20,7 +20,7 @@ export default function Experience() {
     <main className="pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
       {/* Header */}
       <div className="mb-12">
-        <p className="font-mono text-xs text-[#3776AB] mb-2">// experience</p>
+        <p className="font-mono text-xs text-[#4B9CD3] mb-2">// experience</p>
         <h1 className="text-3xl sm:text-4xl font-bold text-[#F8FAFC] mb-3">Experience</h1>
         <p className="text-[#94A3B8]">Professional timeline and technical skills.</p>
       </div>
@@ -46,26 +46,26 @@ export default function Experience() {
                   aria-hidden="true"
                 />
 
-                <article className={`bg-[#111827] border rounded-xl p-5 ${exp.special ? "border-[#1a2538] opacity-75" : "border-[#243044]"}`}>
+                <article className={`bg-[#111827] border rounded-xl p-5 ${exp.special ? "border-[#1a2538]" : "border-[#243044]"}`}>
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-3">
                     <div>
-                      <h2 className={`font-semibold text-base ${exp.special ? "text-[#64748B]" : "text-[#F8FAFC]"}`}>
+                      <h2 className={`font-semibold text-base ${exp.special ? "text-[#94A3B8]" : "text-[#F8FAFC]"}`}>
                         {exp.role}
                       </h2>
-                      <p className={`text-sm ${exp.special ? "text-[#64748B]" : "text-[#4B9CD3]"}`}>
+                      <p className={`text-sm ${exp.special ? "text-[#94A3B8]" : "text-[#4B9CD3]"}`}>
                         {exp.company}
                       </p>
                     </div>
                     <div className="flex flex-col items-start sm:items-end gap-1 flex-shrink-0">
-                      <span className="font-mono text-xs text-[#64748B]">
+                      <span className="font-mono text-xs text-[#7C8BA3]">
                         {exp.startDate} — {exp.current ? "Present" : exp.endDate ?? "—"}
                       </span>
                       <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-mono text-[#64748B] border border-[#1a2538] rounded px-1.5 py-0.5">
+                        <span className="text-2xs font-mono text-[#7C8BA3] border border-[#1a2538] rounded-sm px-1.5 py-0.5">
                           {exp.type}
                         </span>
                         {exp.current && (
-                          <span className="flex items-center gap-1 text-[10px] font-mono text-[#22C55E]">
+                          <span className="flex items-center gap-1 text-2xs font-mono text-[#22C55E]">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] status-pulse" aria-hidden="true" />
                             Current
                           </span>
@@ -74,14 +74,14 @@ export default function Experience() {
                     </div>
                   </div>
 
-                  <p className="text-xs font-mono text-[#64748B] mb-3">{exp.location}</p>
+                  <p className="text-xs font-mono text-[#7C8BA3] mb-3">{exp.location}</p>
 
                   {!exp.special && (
                     <>
                       <ul className="space-y-1.5 mb-4" role="list">
                         {exp.highlights.map((h, i) => (
                           <li key={i} className="flex items-start gap-2 text-sm text-[#94A3B8]">
-                            <span className="text-[#3776AB] mt-0.5 flex-shrink-0">›</span>
+                            <span className="text-[#4B9CD3] mt-0.5 flex-shrink-0">›</span>
                             {h}
                           </li>
                         ))}
@@ -92,7 +92,7 @@ export default function Experience() {
                           {exp.technologies.map((t) => (
                             <span
                               key={t}
-                              className="font-mono text-[10px] text-[#64748B] border border-[#1a2538] rounded px-1.5 py-0.5"
+                              className="font-mono text-2xs text-[#7C8BA3] border border-[#1a2538] rounded-sm px-1.5 py-0.5"
                             >
                               {t}
                             </span>
@@ -166,7 +166,7 @@ export default function Experience() {
             >
               <div className="flex items-start justify-between gap-3 mb-2">
                 <h3 className="font-semibold text-[#F8FAFC] text-sm">{ach.title}</h3>
-                <span className="font-mono font-bold text-[#FFD343] text-lg leading-none flex-shrink-0">
+                <span className="font-mono font-bold text-[#4B9CD3] text-lg leading-none flex-shrink-0">
                   {ach.highlight}
                 </span>
               </div>
@@ -188,7 +188,7 @@ export default function Experience() {
               <h3 className="font-semibold text-[#F8FAFC]">Bachelor of Computer Science</h3>
               <p className="text-sm text-[#4B9CD3] mt-0.5">Benha University</p>
             </div>
-            <span className="font-mono text-xs text-[#64748B] whitespace-nowrap">2020 — 2024</span>
+            <span className="font-mono text-xs text-[#7C8BA3] whitespace-nowrap">2020 — 2024</span>
           </div>
         </div>
       </section>

@@ -2,32 +2,22 @@ import { Link } from "react-router";
 import type { Project } from "../data/projects";
 import TechBadge from "./TechBadge";
 import StatusBadge from "./StatusBadge";
+import ProjectSignature from "./ProjectSignature";
 
 interface ProjectCardProps {
   project: Project;
 }
 
-function PlaceholderCover({ name }: { name: string }) {
-  return (
-    <div className="w-full h-full flex flex-col items-center justify-center bg-[#0B1120] relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10" style={{
-        backgroundImage: "repeating-linear-gradient(0deg, #243044 0px, #243044 1px, transparent 1px, transparent 32px), repeating-linear-gradient(90deg, #243044 0px, #243044 1px, transparent 1px, transparent 32px)"
-      }} />
-      <div className="relative z-10 flex flex-col items-center gap-2">
-        <span className="font-mono text-xs text-[#4B9CD3] text-center px-4 line-clamp-2">{name}</span>
-      </div>
-    </div>
-  );
-}
-
 export default function ProjectCard({ project }: ProjectCardProps) {
   return (
     <article
-      className="project-card bg-[#111827] border border-[#243044] rounded-xl overflow-hidden flex flex-col h-full"
+      className="project-card group bg-[#111827] border border-[#243044] rounded-xl overflow-hidden flex flex-col h-full"
       aria-label={`Project: ${project.name}`}
     >
-      {/* Cover */}
-      <div className="h-44 relative overflow-hidden bg-[#0B1120] flex-shrink-0">
+      {/* Cover. Real screenshot when one exists, generated architecture
+          signature otherwise — the flagship project is confidential and will
+          never have one. */}
+      <div className="h-40 relative overflow-hidden bg-[#0B1120] border-b border-[#1a2538] flex-shrink-0">
         {project.coverImage ? (
           <img
             src={project.coverImage}
@@ -36,29 +26,18 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             loading="lazy"
           />
         ) : (
-          <PlaceholderCover name={project.name} />
+          <ProjectSignature project={project} size="card" />
         )}
 
         {/* Confidential overlay */}
         {project.confidential && (
           <div className="absolute top-2 right-2">
-            <span className="text-[10px] font-mono bg-[#080D18]/80 border border-[#FFD343]/30 text-[#FFD343] px-1.5 py-0.5 rounded">
+            <span className="text-2xs font-mono bg-[#080D18]/80 border border-[#FFD343]/30 text-[#FFD343] px-1.5 py-0.5 rounded-sm">
               Confidential
             </span>
           </div>
         )}
 
-        {/* Category pills overlay */}
-        <div className="absolute bottom-2 left-2 flex flex-wrap gap-1">
-          {project.categories.slice(0, 2).map((cat) => (
-            <span
-              key={cat}
-              className="text-[10px] font-mono bg-[#080D18]/80 text-[#64748B] border border-[#243044]/60 px-1.5 py-0.5 rounded"
-            >
-              {cat}
-            </span>
-          ))}
-        </div>
       </div>
 
       {/* Body */}
@@ -67,14 +46,24 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         <div className="flex items-start justify-between gap-2 mb-2">
           <h3 className="font-semibold text-[#F8FAFC] text-base leading-snug">{project.name}</h3>
           {project.year && (
-            <span className="text-[11px] font-mono text-[#64748B] whitespace-nowrap mt-0.5">
+            <span className="text-2xs font-mono text-[#7C8BA3] whitespace-nowrap mt-0.5">
               {project.year}
             </span>
           )}
         </div>
 
-        <div className="mb-3">
+        {/* Status + categories. Categories used to overlay the cover, where they
+            collided with the signature's leaf row and were hard to read. */}
+        <div className="flex flex-wrap items-center gap-1.5 mb-3">
           <StatusBadge status={project.status} />
+          {project.categories.slice(0, 2).map((cat) => (
+            <span
+              key={cat}
+              className="text-2xs font-mono text-[#7C8BA3] border border-[#243044] px-1.5 py-0.5 rounded-sm"
+            >
+              {cat}
+            </span>
+          ))}
         </div>
 
         {/* Description */}
@@ -83,8 +72,8 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         </p>
 
         {/* Role */}
-        <p className="text-xs font-mono text-[#64748B] mb-3">
-          <span className="text-[#3776AB]">role:</span> {project.role}
+        <p className="text-xs font-mono text-[#7C8BA3] mb-3">
+          <span className="text-[#4B9CD3]">role:</span> {project.role}
         </p>
 
         {/* Tech badges */}
@@ -93,7 +82,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             <TechBadge key={tech} label={tech} />
           ))}
           {project.technologies.length > 4 && (
-            <span className="text-[11px] font-mono text-[#64748B]">
+            <span className="text-2xs font-mono text-[#7C8BA3]">
               +{project.technologies.length - 4}
             </span>
           )}
@@ -130,7 +119,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-1.5 text-[#64748B] hover:text-[#4B9CD3] transition-colors"
+                  className="p-1.5 text-[#7C8BA3] hover:text-[#4B9CD3] transition-colors"
                   aria-label={link.label}
                   title={link.label}
                 >

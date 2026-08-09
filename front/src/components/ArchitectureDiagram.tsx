@@ -20,11 +20,19 @@ const nodes: Node[] = [
   { id: "monitor", label: "Monitoring", sublabel: "Grafana · Prometheus", x: 50, y: 79, color: "dim", size: "sm" },
 ];
 
+/**
+ * Decorative annotations pinned to the diagram's edges.
+ *
+ * These were previously centred on x=5%/95% with `-translate-x-1/2`, which put
+ * half of every label outside the parent's `overflow-hidden` — "Elasticsearch"
+ * rendered as "lasticsearch" at every viewport. Anchoring to the edge instead
+ * of centring on a percentage makes clipping structurally impossible.
+ */
 const sideNodes = [
-  { label: "WebSockets", x: 5, y: 38 },
-  { label: "Elasticsearch", x: 5, y: 50 },
-  { label: "Docker", x: 95, y: 38 },
-  { label: "AWS EC2", x: 95, y: 50 },
+  { label: "WebSockets", side: "left" as const, y: 38 },
+  { label: "Elasticsearch", side: "left" as const, y: 50 },
+  { label: "Docker", side: "right" as const, y: 38 },
+  { label: "AWS EC2", side: "right" as const, y: 50 },
 ];
 
 const connections = [
@@ -104,8 +112,7 @@ export default function ArchitectureDiagram() {
 
   return (
     <div
-      className="relative w-full"
-      style={{ height: "380px" }}
+      className="relative w-full h-[clamp(320px,52vw,400px)]"
       aria-label="Django backend architecture diagram"
       role="img"
     >
@@ -167,12 +174,12 @@ export default function ArchitectureDiagram() {
           >
             <div className="flex items-center gap-1 mb-0.5">
               <span className={`w-1.5 h-1.5 rounded-full ${styles.dot} flex-shrink-0`} />
-              <span className={`font-mono font-medium text-[11px] ${styles.text} leading-none`}>
+              <span className={`font-mono font-medium text-2xs ${styles.text} leading-none`}>
                 {node.label}
               </span>
             </div>
             {node.sublabel && (
-              <span className="text-[9px] text-[#64748B] font-mono leading-none">{node.sublabel}</span>
+              <span className="text-2xs text-[#7C8BA3] font-mono leading-none">{node.sublabel}</span>
             )}
           </div>
         );
@@ -182,10 +189,14 @@ export default function ArchitectureDiagram() {
       {sideNodes.map((node) => (
         <div
           key={node.label}
-          className="absolute transform -translate-x-1/2 -translate-y-1/2"
-          style={{ left: `${node.x}%`, top: `${node.y}%` }}
+          // Hidden below `sm`: at 375px these decorative annotations collide
+          // with the core node. The main stack reads fine without them.
+          className={`absolute -translate-y-1/2 hidden sm:block ${
+            node.side === "left" ? "left-0" : "right-0"
+          }`}
+          style={{ top: `${node.y}%` }}
         >
-          <span className="font-mono text-[9px] text-[#64748B] border border-[#1a2538] rounded px-1.5 py-0.5 bg-[#080D18]/80 whitespace-nowrap">
+          <span className="font-mono text-2xs text-[#7C8BA3] border border-[#1a2538] rounded-sm px-1.5 py-0.5 bg-[#080D18]/80 whitespace-nowrap">
             {node.label}
           </span>
         </div>
@@ -193,7 +204,7 @@ export default function ArchitectureDiagram() {
 
       {/* Diagram label */}
       <div className="absolute bottom-0 left-0 right-0 text-center">
-        <span className="font-mono text-[9px] text-[#64748B]">
+        <span className="font-mono text-2xs text-[#7C8BA3]">
           // system architecture · illustrative
         </span>
       </div>

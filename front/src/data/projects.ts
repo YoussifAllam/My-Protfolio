@@ -505,6 +505,12 @@ The project was recognized with first place at the Annual Student Conference for
 export const projects: Project[] = ALL_PROJECTS.filter((p) => !p.draft);
 
 export const getFeaturedProjects = () => projects.filter((p) => p.featured);
+
+/**
+ * The single flagship project. `biggestProject` has existed on the type and
+ * been set on jafco-analytics since the start, but nothing ever read it.
+ */
+export const getBiggestProject = () => projects.find((p) => p.biggestProject) ?? null;
 export const getProjectBySlug = (slug: string) => projects.find((p) => p.slug === slug);
 export const getProjectsByCategory = (category: string) =>
   category === "All" ? projects : projects.filter((p) => p.categories.includes(category));

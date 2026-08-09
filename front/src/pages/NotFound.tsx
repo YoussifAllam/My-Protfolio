@@ -3,7 +3,7 @@ import { Link } from "react-router";
 export default function NotFound() {
   return (
     <main className="pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-2xl mx-auto">
-      <p className="font-mono text-xs text-[#3776AB] mb-3">// traceback</p>
+      <p className="font-mono text-xs text-[#4B9CD3] mb-3">// traceback</p>
       <h1 className="text-3xl sm:text-4xl font-bold text-[#F8FAFC] mb-4">
         Page.DoesNotExist
       </h1>
@@ -13,7 +13,7 @@ export default function NotFound() {
       </p>
 
       <div className="bg-[#111827] border border-[#243044] rounded-xl p-4 font-mono text-xs mb-8 overflow-x-auto">
-        <p className="text-[#64748B]">Traceback (most recent call last):</p>
+        <p className="text-[#7C8BA3]">Traceback (most recent call last):</p>
         <p className="text-[#94A3B8] ml-4">File &quot;router.py&quot;, line 1, in resolve</p>
         <p className="text-[#F59E0B]">Page.DoesNotExist: No page matches the given query.</p>
       </div>

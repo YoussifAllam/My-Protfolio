@@ -2,7 +2,9 @@ import { useParams, Link, Navigate } from "react-router";
 import { getProjectBySlug, projects, type Project } from "../data/projects";
 import TechBadge from "../components/TechBadge";
 import StatusBadge from "../components/StatusBadge";
-import { useState, useEffect } from "react";
+import ProjectSignature from "../components/ProjectSignature";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useDialog } from "../hooks/useDialog";
 
 function LinkIcon() {
   return (
@@ -22,8 +24,24 @@ export default function ProjectDetail() {
   const { slug } = useParams<{ slug: string }>();
   const project = getProjectBySlug(slug ?? "");
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+  // The gallery array is computed below from `project`, which isn't available
+  // until after the early-return guard — but hooks can't be conditional, so
+  // the arrow-key handler reads the current length from this ref instead of
+  // closing over `gallery.length` directly.
+  const galleryLenRef = useRef(0);
 
-  // Must run before the early return below — hooks cannot be conditional.
+  const handleLightboxKey = useCallback((e: KeyboardEvent) => {
+    if (e.key === "ArrowLeft") setLightboxIdx((i) => (i && i > 0 ? i - 1 : i));
+    if (e.key === "ArrowRight") {
+      setLightboxIdx((i) => (i !== null && i < galleryLenRef.current - 1 ? i + 1 : i));
+    }
+  }, []);
+  const lightboxRef = useDialog<HTMLDivElement>(
+    lightboxIdx !== null,
+    () => setLightboxIdx(null),
+    handleLightboxKey,
+  );
+
   useEffect(() => {
     if (project) document.title = `${project.name} — Youssif Hassan`;
   }, [project]);
@@ -36,6 +54,7 @@ export default function ProjectDetail() {
   const gallery = project.images.filter(
     (img): img is typeof img & { src: string } => Boolean(img.src),
   );
+  galleryLenRef.current = gallery.length;
 
   const currentIdx = projects.findIndex((p) => p.slug === slug);
   const prevProject = currentIdx > 0 ? projects[currentIdx - 1] : null;
@@ -53,7 +72,7 @@ export default function ProjectDetail() {
     <main className="pt-24 pb-20">
       {/* Hero */}
       <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-8">
-        <Link to="/projects" className="inline-flex items-center gap-1.5 text-sm text-[#64748B] hover:text-[#4B9CD3] transition-colors mb-6">
+        <Link to="/projects" className="inline-flex items-center gap-1.5 text-sm text-[#7C8BA3] hover:text-[#4B9CD3] transition-colors mb-6">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
             <path d="M6.707 12.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L3.414 7H12a1 1 0 110 2H3.414l3.293 3.293a1 1 0 010 1.414z" />
           </svg>
@@ -65,16 +84,11 @@ export default function ProjectDetail() {
           {project.coverImage ? (
             <img src={project.coverImage} alt={`${project.name} cover`} className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden">
-              <div className="absolute inset-0 opacity-5" style={{
-                backgroundImage: "repeating-linear-gradient(0deg, #3776AB 0px, #3776AB 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, #3776AB 0px, #3776AB 1px, transparent 1px, transparent 40px)"
-              }} />
-              <p className="text-sm text-[#4B9CD3] z-10">{project.name}</p>
-            </div>
+            <ProjectSignature project={project} size="detail" decorative={false} />
           )}
           {project.confidential && (
             <div className="absolute top-3 left-3">
-              <span className="text-[11px] font-mono bg-[#080D18]/80 border border-[#FFD343]/30 text-[#FFD343] px-2 py-1 rounded flex items-center gap-1.5">
+              <span className="text-2xs font-mono bg-[#080D18]/80 border border-[#FFD343]/30 text-[#FFD343] px-2 py-1 rounded-sm flex items-center gap-1.5">
                 <svg width="10" height="10" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
                 </svg>
@@ -89,7 +103,7 @@ export default function ProjectDetail() {
           <div className="lg:col-span-2">
             <div className="flex flex-wrap gap-2 mb-3">
               {project.categories.map((cat) => (
-                <span key={cat} className="text-xs font-mono px-2 py-0.5 rounded border border-[#243044] text-[#64748B] bg-[#111827]">
+                <span key={cat} className="text-xs font-mono px-2 py-0.5 rounded-sm border border-[#243044] text-[#7C8BA3] bg-[#111827]">
                   {cat}
                 </span>
               ))}
@@ -104,7 +118,10 @@ export default function ProjectDetail() {
           </div>
 
           {/* Sidebar */}
-          <aside className="lg:sticky lg:top-24 self-start bg-[#0B1120] border border-[#243044] rounded-xl p-5 space-y-4" aria-label="Project details">
+          <aside className="lg:sticky lg:top-24 self-start bg-[#0B1120] border border-[#243044] rounded-xl p-5" aria-label="Project details">
+            {/* <dt>/<dd> are only valid inside a <dl>; without it these were 12
+                orphaned definition items. */}
+            <dl className="space-y-4">
             {[
               { label: "Role", value: project.role },
               { label: "Timeline", value: timeline(project) },
@@ -115,13 +132,13 @@ export default function ProjectDetail() {
               .filter((f): f is { label: string; value: string } => Boolean(f.value))
               .map(({ label, value }) => (
                 <div key={label}>
-                  <dt className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider mb-1">{label}</dt>
+                  <dt className="font-mono text-2xs text-[#7C8BA3] uppercase tracking-wider mb-1">{label}</dt>
                   <dd className="text-sm text-[#F8FAFC]">{value}</dd>
                 </div>
               ))}
 
             <div>
-              <dt className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider mb-2">Technologies</dt>
+              <dt className="font-mono text-2xs text-[#7C8BA3] uppercase tracking-wider mb-2">Technologies</dt>
               <dd className="flex flex-wrap gap-1.5">
                 {project.technologies.map((t) => (
                   <TechBadge key={t} label={t} />
@@ -131,7 +148,7 @@ export default function ProjectDetail() {
 
             {visibleLinks.length > 0 && (
               <div>
-                <dt className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider mb-2">Links</dt>
+                <dt className="font-mono text-2xs text-[#7C8BA3] uppercase tracking-wider mb-2">Links</dt>
                 <dd className="flex flex-col gap-2">
                   {visibleLinks.map((link) => (
                     <a
@@ -148,6 +165,7 @@ export default function ProjectDetail() {
                 </dd>
               </div>
             )}
+            </dl>
           </aside>
         </div>
       </div>
@@ -162,7 +180,7 @@ export default function ProjectDetail() {
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2" role="list">
             {project.responsibilities.map((item, i) => (
               <li key={i} className="flex items-start gap-2.5 text-sm text-[#94A3B8]">
-                <span className="text-[#3776AB] font-mono text-xs mt-0.5">›</span>
+                <span className="text-[#4B9CD3] font-mono text-xs mt-0.5">›</span>
                 {item}
               </li>
             ))}
@@ -181,9 +199,9 @@ export default function ProjectDetail() {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
               {project.metrics.map((m) => (
                 <div key={m.label} className="text-center">
-                  <div className="text-3xl font-bold font-mono text-[#FFD343] mb-1">{m.value}</div>
+                  <div className="text-3xl font-bold font-mono text-[#F8FAFC] mb-1">{m.value}</div>
                   <div className="text-sm text-[#94A3B8]">{m.label}</div>
-                  {m.note && <div className="text-xs font-mono text-[#64748B] mt-0.5">{m.note}</div>}
+                  {m.note && <div className="text-xs font-mono text-[#7C8BA3] mt-0.5">{m.note}</div>}
                 </div>
               ))}
             </div>
@@ -206,11 +224,11 @@ export default function ProjectDetail() {
                   {[
                     { label: "Challenge", text: ch.problem, color: "text-[#F59E0B]" },
                     { label: "Approach", text: ch.approach, color: "text-[#4B9CD3]" },
-                    { label: "Solution", text: ch.solution, color: "text-[#3776AB]" },
+                    { label: "Solution", text: ch.solution, color: "text-[#4B9CD3]" },
                     { label: "Result", text: ch.result, color: "text-[#22C55E]" },
                   ].map(({ label, text, color }) => (
                     <div key={label}>
-                      <div className={`font-mono text-[10px] ${color} uppercase tracking-wider mb-2`}>{label}</div>
+                      <div className={`font-mono text-2xs ${color} uppercase tracking-wider mb-2`}>{label}</div>
                       <p className="text-sm text-[#94A3B8] leading-relaxed">{text}</p>
                     </div>
                   ))}
@@ -248,23 +266,27 @@ export default function ProjectDetail() {
         </section>
       )}
 
-      {/* Lightbox */}
+      {/* Lightbox. The previous version put its keydown handler on a
+          tabIndex={0} div that was never programmatically focused, so Escape
+          and the arrow keys silently did nothing — useDialog fixes that with a
+          document-level capture listener, plus a real focus trap and restore. */}
       {lightboxIdx !== null && gallery[lightboxIdx] && (
         <div
+          ref={lightboxRef}
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
           role="dialog"
           aria-modal="true"
           aria-label="Image lightbox"
-          onClick={() => setLightboxIdx(null)}
-          onKeyDown={(e) => {
-            if (e.key === "Escape") setLightboxIdx(null);
-            if (e.key === "ArrowLeft" && lightboxIdx > 0) setLightboxIdx(lightboxIdx - 1);
-            if (e.key === "ArrowRight" && lightboxIdx < gallery.length - 1) setLightboxIdx(lightboxIdx + 1);
-          }}
-          tabIndex={0}
         >
           <button
-            className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors"
+            className="absolute inset-0 cursor-default"
+            onClick={() => setLightboxIdx(null)}
+            aria-label="Close lightbox"
+            tabIndex={-1}
+          />
+
+          <button
+            className="absolute top-4 right-4 z-10 text-white/60 hover:text-white transition-colors active:opacity-70"
             onClick={() => setLightboxIdx(null)}
             aria-label="Close lightbox"
           >
@@ -272,11 +294,34 @@ export default function ProjectDetail() {
               <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
             </svg>
           </button>
+
+          {lightboxIdx > 0 && (
+            <button
+              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 p-2 text-white/60 hover:text-white transition-colors active:opacity-70"
+              onClick={() => setLightboxIdx(lightboxIdx - 1)}
+              aria-label="Previous image"
+            >
+              <svg width="28" height="28" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fillRule="evenodd" d="M12.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L8.414 10l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          )}
+          {lightboxIdx < gallery.length - 1 && (
+            <button
+              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 p-2 text-white/60 hover:text-white transition-colors active:opacity-70"
+              onClick={() => setLightboxIdx(lightboxIdx + 1)}
+              aria-label="Next image"
+            >
+              <svg width="28" height="28" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fillRule="evenodd" d="M7.293 4.293a1 1 0 011.414 0l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414-1.414L11.586 10 7.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          )}
+
           <img
             src={gallery[lightboxIdx].src}
             alt={gallery[lightboxIdx].caption}
-            className="max-w-full max-h-[85vh] object-contain rounded-lg"
-            onClick={(e) => e.stopPropagation()}
+            className="relative max-w-full max-h-[85vh] object-contain rounded-lg"
           />
           <p className="absolute bottom-4 left-0 right-0 text-center text-sm text-white/60">
             {gallery[lightboxIdx].caption}
@@ -299,7 +344,7 @@ export default function ProjectDetail() {
                 <div className="text-sm font-medium text-[#F8FAFC] group-hover:text-[#4B9CD3] transition-colors mb-1">
                   {p.name}
                 </div>
-                <div className="text-xs text-[#64748B] line-clamp-2">{p.shortDescription}</div>
+                <div className="text-xs text-[#7C8BA3] line-clamp-2">{p.shortDescription}</div>
               </Link>
             ))}
           </div>
@@ -324,7 +369,7 @@ export default function ProjectDetail() {
             </Link>
           )}
         </div>
-        <Link to="/projects" className="text-sm text-[#64748B] hover:text-[#94A3B8] transition-colors">
+        <Link to="/projects" className="text-sm text-[#7C8BA3] hover:text-[#94A3B8] transition-colors">
           All Projects
         </Link>
         <div>

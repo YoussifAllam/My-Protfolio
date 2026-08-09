@@ -25,18 +25,18 @@ export default function TechBadge({ label, variant, size = "sm" }: TechBadgeProp
     django: "bg-[#0C4B33]/30 text-[#44B78B] border border-[#0C4B33]/50",
     python: "bg-[#3776AB]/15 text-[#4B9CD3] border border-[#3776AB]/30",
     devops: "bg-[#172033] text-[#94A3B8] border border-[#243044]",
-    ai: "bg-purple-950/30 text-purple-300 border border-purple-800/30",
-    dim: "bg-transparent text-[#64748B] border border-[#1a2538]",
+    ai: "bg-[#0C4B33]/30 text-[#44B78B] border border-[#44B78B]/30",
+    dim: "bg-transparent text-[#7C8BA3] border border-[#1a2538]",
   };
 
   const sizeStyles = {
-    sm: "px-2 py-0.5 text-[11px]",
+    sm: "px-2 py-0.5 text-2xs",
     md: "px-2.5 py-1 text-xs",
   };
 
   return (
     <span
-      className={`inline-flex items-center font-mono rounded ${styles[resolvedVariant]} ${sizeStyles[size]} whitespace-nowrap`}
+      className={`inline-flex items-center font-mono rounded-sm ${styles[resolvedVariant]} ${sizeStyles[size]} whitespace-nowrap`}
     >
       {label}
     </span>
