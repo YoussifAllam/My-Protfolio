@@ -1,5 +1,7 @@
 import { Link } from "react-router";
 import { SOCIAL_LINKS, CONTACT_EMAIL, LOCATION } from "../data/social";
+import { useApi } from "../hooks/useApi";
+import { getSummary } from "../lib/api";
 
 const NAV_LINKS = [
   { to: "/", label: "Home" },
@@ -11,6 +13,21 @@ const NAV_LINKS = [
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  // The footer renders on every page and must never show a loading state or
+  // flash empty — the static fallback (last-known-good values) is shown
+  // immediately and silently swapped for live data once the (cached, shared
+  // with every other page's) summary fetch resolves.
+  const { data: summary } = useApi(getSummary);
+  const profile = summary?.profile;
+
+  const name = profile?.name ?? "Youssif Hassan";
+  const role = profile?.primaryRole ?? "Python Backend Developer";
+  const email = profile?.email || CONTACT_EMAIL;
+  const location = profile?.location || LOCATION;
+  const socialLinks = profile?.socialLinks.length ? profile.socialLinks : SOCIAL_LINKS.map(
+    (l) => ({ label: l.label, url: l.href }),
+  );
+  const availability = profile?.availability ?? "Available for opportunities";
 
   return (
     <footer className="border-t border-[#243044] bg-[#0B1120]" role="contentinfo">
@@ -20,16 +37,16 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <span className="font-mono text-xs text-[#4B9CD3]">{'>'}</span>
-              <span className="font-semibold text-[#F8FAFC]">Youssif Hassan</span>
+              <span className="font-semibold text-[#F8FAFC]">{name}</span>
             </div>
-            <p className="text-[#7C8BA3] text-sm font-mono mb-4">Python Backend Developer</p>
+            <p className="text-[#7C8BA3] text-sm font-mono mb-4">{role}</p>
             <a
-              href={`mailto:${CONTACT_EMAIL}`}
+              href={`mailto:${email}`}
               className="text-sm text-[#94A3B8] hover:text-[#4B9CD3] transition-colors"
             >
-              {CONTACT_EMAIL}
+              {email}
             </a>
-            <p className="text-xs text-[#7C8BA3] mt-1">{LOCATION}</p>
+            <p className="text-xs text-[#7C8BA3] mt-1">{location}</p>
           </div>
 
           {/* Navigation */}
@@ -57,10 +74,10 @@ export default function Footer() {
               Profiles
             </h3>
             <ul className="flex flex-col gap-2" role="list">
-              {SOCIAL_LINKS.map((link) => (
+              {socialLinks.map((link) => (
                 <li key={link.label}>
                   <a
-                    href={link.href}
+                    href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-[#94A3B8] hover:text-[#4B9CD3] transition-colors flex items-center gap-1.5"
@@ -79,11 +96,11 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-[#1a2538] pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-[#7C8BA3] font-mono">
-            © {year} Youssif Hassan. Designed around Python. Engineered for clarity.
+            © {year} {name}. Designed around Python. Engineered for clarity.
           </p>
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] status-pulse" aria-hidden="true" />
-            <span className="text-xs font-mono text-[#7C8BA3]">Available for opportunities</span>
+            <span className="text-xs font-mono text-[#7C8BA3]">{availability}</span>
           </div>
         </div>
       </div>

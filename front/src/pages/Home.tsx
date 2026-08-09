@@ -1,55 +1,39 @@
+import { useMemo } from "react";
 import { Link } from "react-router";
 import ArchitectureDiagram from "../components/ArchitectureDiagram";
-import TerminalCard from "../components/TerminalCard";
+import TerminalCard, { type TerminalLine } from "../components/TerminalCard";
 import TechBadge from "../components/TechBadge";
 import ProjectCard from "../components/ProjectCard";
 import FeaturedProjectCard from "../components/FeaturedProjectCard";
 import DownloadCV from "../components/DownloadCV";
 import Section from "../components/Section";
+import { PageLoading, PageError } from "../components/ApiState";
 import { useReveal } from "../hooks/useReveal";
-import { getFeaturedProjects, getBiggestProject, getProjectBySlug } from "../data/projects";
-import { CONTACT_EMAIL } from "../data/social";
-
-/** Five, not eight — the rest appear under Core Specializations. */
-const HERO_TECHS = ["Python", "Django", "Django REST Framework", "PostgreSQL", "Docker"];
+import { useApi } from "../hooks/useApi";
+import { getSummary } from "../lib/api";
+import type { Project } from "../types/portfolio";
 
 /**
- * Three attributed numbers, down from seven unattributed ones.
+ * Which profile metric links to which project. This attribution isn't
+ * modeled on the backend (Profile.metrics is a flat value/label list), so the
+ * mapping lives here as presentation logic — the numbers and labels
+ * themselves still come from the API.
  *
- * Cut deliberately: "2.5+ years" (already in the hero copy), "1,000+ branches"
- * (same fact about the same project as ~1B — folded into its label), "5K+ daily
- * API requests" (0.06 req/s; beside "1B records" it invites arithmetic that
- * costs credibility — it stays on the Mutqinai page where the context fits),
- * and "80% shorter deploys" (a second BAGGR delivery metric in one strip).
- *
- * `loud` marks the single amber element on the page.
+ * Cut from the original 7 metrics deliberately: "2.5+ years" (already in the
+ * hero copy), "1,000+ branches" (same fact as ~1B, split into two tiles it
+ * only dilutes), "5K+ daily API requests" (0.06 req/s; beside "1B records" it
+ * invites arithmetic that costs credibility — it stays on the Mutqinai page
+ * where the context fits), "80% shorter deploys" (a second BAGGR delivery
+ * metric in one strip).
  */
-const PROOF = [
-  {
-    value: "~1B",
-    label: "sales records served across 1,000+ retail branches",
-    slug: "jafco-analytics",
-    loud: true,
-  },
-  {
-    value: "40%",
-    label: "faster API responses after query and index work",
-    slug: "baggr-logistics",
-    loud: false,
-  },
-  {
-    value: "99.9%",
-    label: "production uptime, monitored with Prometheus and Grafana",
-    slug: "baggr-logistics",
-    loud: false,
-  },
-] as const;
-
-const BACKEND_SKILLS = [
-  "Python", "Django", "Django REST Framework", "REST APIs", "Authentication",
-  "Role-based Permissions", "PostgreSQL", "MySQL", "MS SQL Server", "Redis",
-  "Celery", "WebSockets", "Elasticsearch",
-];
+const PROOF_VALUES = ["~1B", "40%", "99.9%"] as const;
+const PROOF_SLUGS: Record<string, string> = {
+  "~1B": "jafco-analytics",
+  "40%": "baggr-logistics",
+  "99.9%": "baggr-logistics",
+};
+/** The one amber element allowed on the page. */
+const LOUD_VALUE = "~1B";
 
 const ICON_DESKTOP = (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -67,34 +51,50 @@ const ICON_AI = (
     <path fillRule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2zM5 5h10v10H5V5z" clipRule="evenodd" />
   </svg>
 );
-
-/** Badge budget: five each, remainder as a count. Home held 43 of these. */
-const SUPPORTING = [
-  {
-    id: "desktop",
-    title: "Desktop Applications",
-    icon: ICON_DESKTOP,
-    skills: ["PyQt5", "Desktop Dashboards", "REST API Integration", "Background Workers", "Multithreading", "Linux Applications", "Windows Applications", "Local System Integrations"],
-  },
-  {
-    id: "devops",
-    title: "DevOps & Infrastructure",
-    icon: ICON_DEVOPS,
-    skills: ["Docker", "Docker Compose", "GitHub Actions", "CI/CD", "AWS EC2", "VPS Deployment", "Nginx", "Apache", "Load Balancing", "Prometheus", "Grafana"],
-  },
-  {
-    id: "ai",
-    title: "AI & Machine Learning",
-    icon: ICON_AI,
-    skills: ["OpenAI GPT", "Google Gemini", "LangChain", "Regression", "Classification", "Time-series Forecasting", "CNNs", "Image Classification", "Transfer Learning", "Action Detection", "Deep Neural Networks"],
-  },
-];
-
 const ICON_BACKEND = (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
     <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
   </svg>
 );
+
+/**
+ * Backend `SkillGroup`s are fine-grained (12 categories — "Databases",
+ * "Caching & Queues", "Security", ... — see Experience.tsx, which lists all
+ * of them). Home's specialization cards are a teaser, not the full inventory,
+ * so groups are merged into the same 4 buckets the design already uses.
+ * Matching is by exact category name; anything unmatched is simply not shown
+ * here (it's still on /experience).
+ */
+const BUCKETS = [
+  {
+    id: "backend",
+    title: "Backend Engineering",
+    icon: ICON_BACKEND,
+    accent: "bg-[#3776AB]/15 text-[#4B9CD3]",
+    categories: ["Backend", "Databases", "Caching & Queues", "Security", "Version Control"],
+  },
+  {
+    id: "desktop",
+    title: "Desktop Applications",
+    icon: ICON_DESKTOP,
+    accent: "bg-[#172033] text-[#94A3B8]",
+    categories: ["Desktop Development"],
+  },
+  {
+    id: "devops",
+    title: "DevOps & Infrastructure",
+    icon: ICON_DEVOPS,
+    accent: "bg-[#172033] text-[#94A3B8]",
+    categories: ["DevOps & CI/CD", "Cloud & Infrastructure", "Monitoring"],
+  },
+  {
+    id: "ai",
+    title: "AI & Machine Learning",
+    icon: ICON_AI,
+    accent: "bg-[#7C5CFF]/15 text-[#A78BFA]",
+    categories: ["Machine Learning", "Deep Learning", "AI Integrations"],
+  },
+] as const;
 
 const Arrow = ({ className = "" }: { className?: string }) => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" className={className} aria-hidden="true">
@@ -102,17 +102,68 @@ const Arrow = ({ className = "" }: { className?: string }) => (
   </svg>
 );
 
-const flagship = getBiggestProject();
-const otherFeatured = getFeaturedProjects()
-  .filter((p) => p.slug !== flagship?.slug)
-  .slice(0, 3);
+function pickFlagship(projects: Project[]) {
+  const flagship = projects.find((p) => p.biggestProject) ?? null;
+  const rest = projects.filter((p) => p.slug !== flagship?.slug).slice(0, 3);
+  return { flagship, rest };
+}
 
 export default function Home() {
-  // The hero keeps its existing animate-fade-up/fade-in and is never revealed
-  // — it's above the fold. Everything below gets a group reveal on scroll.
+  const { data: summary, loading, error, retry } = useApi(getSummary);
+
+  // Hooks must run unconditionally — computed before the loading/error
+  // returns below, even though their inputs are only meaningful once data
+  // has arrived.
   const proofRef = useReveal<HTMLDivElement>({ group: true });
   const workRef = useReveal<HTMLDivElement>({ group: true });
   const specRef = useReveal<HTMLDivElement>({ group: true });
+
+  const buckets = useMemo(() => {
+    const skills = summary?.skills ?? [];
+    return BUCKETS.map((bucket) => ({
+      ...bucket,
+      skills: skills
+        .filter((g) => (bucket.categories as readonly string[]).includes(g.category))
+        .flatMap((g) => g.skills),
+    })).filter((bucket) => bucket.skills.length > 0);
+  }, [summary]);
+
+  const terminalLines: TerminalLine[] | undefined = useMemo(() => {
+    const profile = summary?.profile;
+    if (!profile) return undefined;
+    return [
+      { prompt: true, text: "whoami" },
+      { prompt: false, text: `${profile.name} — ${profile.primaryRole}` },
+      { prompt: true, text: "main_specialization" },
+      { prompt: false, text: profile.techStack.slice(0, 5).join(" · ") },
+      { prompt: true, text: "location" },
+      { prompt: false, text: `${profile.location} · available remote` },
+    ];
+  }, [summary]);
+
+  if (loading) return <PageLoading label="home" />;
+  if (error || !summary?.profile) {
+    return <PageError message={error ?? "No profile data was returned."} onRetry={retry} />;
+  }
+
+  const { profile, featuredProjects } = summary;
+  const { flagship, rest: otherFeatured } = pickFlagship(featuredProjects);
+  const aboutIntro =
+    profile.aboutSections.find((s) => s.id === "intro")?.content ?? profile.summary;
+
+  interface ProofItem {
+    value: string;
+    label: string;
+    slug: string;
+    name: string | undefined;
+  }
+  const proof: ProofItem[] = PROOF_VALUES.map((value): ProofItem | null => {
+    const metric = profile.metrics.find((m) => m.value === value);
+    if (!metric) return null;
+    const slug = PROOF_SLUGS[value];
+    const project = featuredProjects.find((p) => p.slug === slug);
+    return { ...metric, slug, name: project?.name };
+  }).filter((p): p is ProofItem => p !== null);
 
   return (
     <main>
@@ -122,28 +173,21 @@ export default function Home() {
           <div className="animate-fade-up">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#44B78B]/25 bg-[#44B78B]/10 mb-7">
               <span className="w-2 h-2 rounded-full bg-[#44B78B] status-pulse" aria-hidden="true" />
-              <span className="text-xs font-mono text-[#44B78B]">
-                Available for Python and Django opportunities
-              </span>
+              <span className="text-xs font-mono text-[#44B78B]">{profile.availability}</span>
             </div>
 
             {/* One h1. The name is what a recruiter confirms; the proposition
                 is what they are scanning for, so it carries the display size. */}
             <h1 className="mb-6">
               <span className="block font-mono text-sm text-[#94A3B8] mb-4">
-                Youssif Hassan
+                {profile.name}
                 <span className="text-[#7C8BA3] px-1.5">/</span>
-                <span className="text-[#4B9CD3]">Python Backend Developer</span>
+                <span className="text-[#4B9CD3]">{profile.primaryRole}</span>
               </span>
-              <span className="block text-display text-[#F8FAFC]">
-                Building scalable Django systems and powerful Python applications.
-              </span>
+              <span className="block text-display text-[#F8FAFC]">{profile.headline}</span>
             </h1>
 
-            <p className="text-lead text-[#94A3B8] max-w-[46ch] mb-8">
-              2.5+ years building scalable APIs, data-intensive platforms, containerized
-              deployments, PyQt5 desktop applications, and AI-powered solutions.
-            </p>
+            <p className="text-lead text-[#94A3B8] max-w-[46ch] mb-8">{profile.summary}</p>
 
             {/* One primary, one secondary, one text link. At 375 the primary
                 goes full width, which kills the old 2+1 orphan wrap. */}
@@ -167,7 +211,7 @@ export default function Home() {
             </div>
 
             <ul className="flex flex-wrap gap-2 list-none" aria-label="Core technologies">
-              {HERO_TECHS.map((tech) => (
+              {profile.techStack.slice(0, 5).map((tech) => (
                 <li key={tech}>
                   <TechBadge label={tech} size="md" />
                 </li>
@@ -193,36 +237,35 @@ export default function Home() {
       </Section>
 
       {/* ── Proof ────────────────────────────────────────────────────────── */}
-      <Section tone="band" space="tight" aria-label="Verified results">
-        <div
-          ref={proofRef}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-[#1a2538]"
-        >
-          {PROOF.map(({ value, label, slug, loud }) => {
-            const project = getProjectBySlug(slug);
-            return (
+      {proof.length > 0 && (
+        <Section tone="band" space="tight" aria-label="Verified results">
+          <div
+            ref={proofRef}
+            className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-[#1a2538]"
+          >
+            {proof.map(({ value, label, slug, name }) => (
               <div key={label} className="pt-8 first:pt-0 sm:pt-0 sm:px-6 sm:first:pl-0 sm:last:pr-0">
                 <div
                   className={`font-mono font-bold text-display-sm leading-none mb-3 ${
-                    loud ? "text-[#FFD343]" : "text-[#F8FAFC]"
+                    value === LOUD_VALUE ? "text-[#FFD343]" : "text-[#F8FAFC]"
                   }`}
                 >
                   {value}
                 </div>
                 <p className="text-sm text-[#94A3B8] leading-snug mb-3 max-w-[30ch]">{label}</p>
-                {project && (
+                {name && (
                   <Link
-                    to={`/projects/${project.slug}`}
+                    to={`/projects/${slug}`}
                     className="inline-flex items-center gap-1 font-mono text-2xs text-[#4B9CD3] hover:text-[#F8FAFC] transition-colors duration-150 active:opacity-70"
                   >
-                    {project.name} <span aria-hidden="true">↗</span>
+                    {name} <span aria-hidden="true">↗</span>
                   </Link>
                 )}
               </div>
-            );
-          })}
-        </div>
-      </Section>
+            ))}
+          </div>
+        </Section>
+      )}
 
       {/* ── Selected Work ────────────────────────────────────────────────── */}
       <Section
@@ -248,75 +291,40 @@ export default function Home() {
       </Section>
 
       {/* ── Core Specializations ─────────────────────────────────────────── */}
-      <Section space="default" eyebrow="// expertise" title="Core Specializations">
-        {/* Dominance via area, elevation and a rail — a 1px ring at 30% opacity
-            inside a 4-up grid was invisible in a screenshot. */}
-        <article className="relative bg-[#172033] border border-[#3776AB]/30 rounded-xl p-6 sm:p-7 overflow-hidden mb-4">
-          <span className="absolute left-0 inset-y-0 w-1 bg-[#3776AB]" aria-hidden="true" />
-          <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] gap-6 items-start">
-            <div>
-              <div className="w-10 h-10 rounded-lg bg-[#3776AB]/15 text-[#4B9CD3] flex items-center justify-center mb-4">
-                {ICON_BACKEND}
-              </div>
-              <h3 className="text-xl font-semibold text-[#F8FAFC] mb-2">Backend Engineering</h3>
-              <p className="text-sm text-[#94A3B8] leading-relaxed">
-                Django, DRF and PostgreSQL at production scale — the work that fills most of
-                my week.
-              </p>
-            </div>
-            <ul className="flex flex-wrap gap-1.5 content-start list-none">
-              {BACKEND_SKILLS.slice(0, 8).map((s) => (
-                <li key={s}>
-                  <TechBadge label={s} size="md" />
-                </li>
-              ))}
-              <li className="self-center font-mono text-xs text-[#7C8BA3] px-1">
-                +{BACKEND_SKILLS.length - 8} more
-              </li>
-            </ul>
+      {buckets.length > 0 && (
+        <Section space="default" eyebrow="// expertise" title="Core Specializations">
+          <div ref={specRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {buckets.map((bucket) => (
+              <article
+                key={bucket.id}
+                className="h-full bg-gradient-to-b from-[#151D2E] to-[#0F1626] border border-[#212B3D] rounded-xl p-5 hover:border-[#3776AB]/40 transition-colors duration-150"
+              >
+                <div
+                  className={`w-9 h-9 rounded-lg flex items-center justify-center mb-4 ${bucket.accent}`}
+                >
+                  {bucket.icon}
+                </div>
+                <h3 className="text-base font-semibold text-[#F8FAFC] mb-3">{bucket.title}</h3>
+                <ul className="flex flex-wrap gap-1.5 list-none">
+                  {bucket.skills.map((s) => (
+                    <li key={s}>
+                      <TechBadge label={s} />
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
           </div>
-        </article>
-
-        <div ref={specRef} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {SUPPORTING.map((exp) => (
-            <article
-              key={exp.id}
-              className="bg-[#111827] border border-[#243044] rounded-xl p-5 hover:border-[#3776AB]/40 transition-colors duration-150"
-            >
-              <div className="w-9 h-9 rounded-lg bg-[#172033] text-[#94A3B8] flex items-center justify-center mb-4">
-                {exp.icon}
-              </div>
-              <h3 className="text-lead font-semibold text-[#F8FAFC] mb-3">{exp.title}</h3>
-              <ul className="flex flex-wrap gap-1.5 list-none">
-                {exp.skills.slice(0, 5).map((s) => (
-                  <li key={s}>
-                    <TechBadge label={s} />
-                  </li>
-                ))}
-                {exp.skills.length > 5 && (
-                  <li className="self-center font-mono text-2xs text-[#7C8BA3]">
-                    +{exp.skills.length - 5}
-                  </li>
-                )}
-              </ul>
-            </article>
-          ))}
-        </div>
-      </Section>
+        </Section>
+      )}
 
       {/* ── Terminal + About ─────────────────────────────────────────────── */}
       <Section space="default" aria-label="About">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-          <TerminalCard />
+          <TerminalCard lines={terminalLines} />
           <div>
             <p className="font-mono text-xs text-[#4B9CD3] mb-3">// about</p>
-            <p className="text-lead text-[#94A3B8] mb-6">
-              I am a Python Backend Developer specializing in Django and Django REST Framework.
-              I build scalable APIs, authentication and permission systems, asynchronous
-              workflows, database-driven products, and production deployment infrastructure. I
-              also develop PyQt5 desktop applications and have practical experience integrating
-              AI and machine learning into real software products.
-            </p>
+            <p className="text-lead text-[#94A3B8] mb-6">{aboutIntro}</p>
             <Link
               to="/about"
               className="group inline-flex items-center gap-2 text-sm font-medium text-[#4B9CD3] hover:text-[#F8FAFC] transition-colors duration-150 active:opacity-70"
@@ -336,7 +344,8 @@ export default function Home() {
             Hiring for a Django backend? Let&apos;s talk about the system.
           </h2>
           <p className="text-lead text-[#94A3B8] mb-8">
-            Based in Cairo and available for remote work worldwide. I reply within 24–48 hours.
+            Based in {profile.location} and available for remote work worldwide. I reply within
+            24–48 hours.
           </p>
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <Link
@@ -348,10 +357,10 @@ export default function Home() {
             </Link>
             <DownloadCV variant="hero" />
             <a
-              href={`mailto:${CONTACT_EMAIL}`}
+              href={`mailto:${profile.email}`}
               className="font-mono text-sm text-[#7C8BA3] hover:text-[#4B9CD3] transition-colors duration-150 active:opacity-70"
             >
-              {CONTACT_EMAIL}
+              {profile.email}
             </a>
           </div>
         </div>

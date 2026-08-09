@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import type { Project } from "../data/projects";
+import type { Project } from "../types/portfolio";
 import TechBadge from "./TechBadge";
 import StatusBadge from "./StatusBadge";
 import ProjectSignature from "./ProjectSignature";
@@ -18,9 +18,11 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           signature otherwise — the flagship project is confidential and will
           never have one. */}
       <div className="h-40 relative overflow-hidden bg-[#0B1120] border-b border-[#1a2538] flex-shrink-0">
-        {project.coverImage ? (
+        {/* coverThumbnail is the pre-compressed ~640×360 WebP card size —
+            using it instead of the full coverImage keeps the grid light. */}
+        {project.coverThumbnail ?? project.coverImage ? (
           <img
-            src={project.coverImage}
+            src={project.coverThumbnail ?? project.coverImage ?? undefined}
             alt={`${project.name} cover`}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             loading="lazy"

@@ -1,4 +1,6 @@
-import { experiences, skillGroups, achievements } from "../data/experience";
+import { PageLoading, PageError } from "../components/ApiState";
+import { useApi } from "../hooks/useApi";
+import { getSummary } from "../lib/api";
 
 const SKILL_ICON_MAP: Record<string, string> = {
   server: "M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1v-2z",
@@ -16,6 +18,15 @@ const SKILL_ICON_MAP: Record<string, string> = {
 };
 
 export default function Experience() {
+  const { data: summary, loading, error, retry } = useApi(getSummary);
+
+  if (loading) return <PageLoading label="experience" />;
+  if (error || !summary) {
+    return <PageError message={error ?? "No data was returned."} onRetry={retry} />;
+  }
+
+  const { experience, skills, achievements } = summary;
+
   return (
     <main className="pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
       {/* Header */}
@@ -28,19 +39,17 @@ export default function Experience() {
       {/* Timeline */}
       <section aria-label="Work experience timeline" className="mb-16">
         <div className="relative">
-          {/* Timeline line */}
           <div className="absolute left-5 top-0 bottom-0 w-px bg-[#243044]" aria-hidden="true" />
 
           <ol className="space-y-8" role="list">
-            {experiences.map((exp) => (
+            {experience.map((exp) => (
               <li key={exp.id} className="relative pl-14">
-                {/* Dot */}
                 <div
                   className={`absolute left-3.5 top-1.5 w-3 h-3 rounded-full border-2 -translate-x-1/2 ${
                     exp.special
-                      ? "border-[#64748B] bg-[#080D18]"
+                      ? "border-[#7C8BA3] bg-[#080D18]"
                       : exp.current
-                      ? "border-[#22C55E] bg-[#22C55E]"
+                      ? "border-[#44B78B] bg-[#44B78B]"
                       : "border-[#3776AB] bg-[#080D18]"
                   }`}
                   aria-hidden="true"
@@ -65,8 +74,8 @@ export default function Experience() {
                           {exp.type}
                         </span>
                         {exp.current && (
-                          <span className="flex items-center gap-1 text-2xs font-mono text-[#22C55E]">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] status-pulse" aria-hidden="true" />
+                          <span className="flex items-center gap-1 text-2xs font-mono text-[#44B78B]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#44B78B] status-pulse" aria-hidden="true" />
                             Current
                           </span>
                         )}
@@ -87,7 +96,7 @@ export default function Experience() {
                         ))}
                       </ul>
 
-                      {exp.technologies && (
+                      {exp.technologies.length > 0 && (
                         <div className="flex flex-wrap gap-1.5">
                           {exp.technologies.map((t) => (
                             <span
@@ -116,9 +125,9 @@ export default function Experience() {
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {skillGroups.map((group) => (
+          {skills.map((group) => (
             <article
-              key={group.category}
+              key={group.id}
               className="bg-[#111827] border border-[#243044] rounded-xl p-4 hover:border-[#3776AB]/30 transition-colors"
             >
               <div className="flex items-center gap-2 mb-3">
@@ -153,30 +162,32 @@ export default function Experience() {
       </section>
 
       {/* Achievements */}
-      <section aria-labelledby="ach-heading" className="mb-12">
-        <h2 id="ach-heading" className="text-2xl font-bold text-[#F8FAFC] mb-6 flex items-center gap-2">
-          <span className="w-1 h-5 rounded-full bg-[#FFD343]" aria-hidden="true" />
-          Achievements
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {achievements.map((ach) => (
-            <article
-              key={ach.id}
-              className="bg-[#111827] border border-[#243044] rounded-xl p-5 hover:border-[#3776AB]/30 transition-colors"
-            >
-              <div className="flex items-start justify-between gap-3 mb-2">
-                <h3 className="font-semibold text-[#F8FAFC] text-sm">{ach.title}</h3>
-                <span className="font-mono font-bold text-[#4B9CD3] text-lg leading-none flex-shrink-0">
-                  {ach.highlight}
-                </span>
-              </div>
-              <p className="text-sm text-[#94A3B8] leading-relaxed">{ach.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+      {achievements.length > 0 && (
+        <section aria-labelledby="ach-heading" className="mb-12">
+          <h2 id="ach-heading" className="text-2xl font-bold text-[#F8FAFC] mb-6 flex items-center gap-2">
+            <span className="w-1 h-5 rounded-full bg-[#FFD343]" aria-hidden="true" />
+            Achievements
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {achievements.map((ach) => (
+              <article
+                key={ach.id}
+                className="bg-[#111827] border border-[#243044] rounded-xl p-5 hover:border-[#3776AB]/30 transition-colors"
+              >
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <h3 className="font-semibold text-[#F8FAFC] text-sm">{ach.title}</h3>
+                  <span className="font-mono font-bold text-[#4B9CD3] text-lg leading-none flex-shrink-0">
+                    {ach.highlight}
+                  </span>
+                </div>
+                <p className="text-sm text-[#94A3B8] leading-relaxed">{ach.description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
 
-      {/* Education */}
+      {/* Education — not modeled on the backend; this one fact stays static. */}
       <section aria-labelledby="edu-heading">
         <h2 id="edu-heading" className="text-2xl font-bold text-[#F8FAFC] mb-4 flex items-center gap-2">
           <span className="w-1 h-5 rounded-full bg-[#3776AB]" aria-hidden="true" />

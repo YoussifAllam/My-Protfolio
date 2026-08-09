@@ -1,4 +1,4 @@
-import type { Project } from "../data/projects";
+import type { Project } from "../types/portfolio";
 
 /**
  * A generated architecture "signature" for a project that has no screenshot.

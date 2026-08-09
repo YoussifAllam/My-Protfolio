@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import type { Project } from "../data/projects";
+import type { Project } from "../types/portfolio";
 import TechBadge from "./TechBadge";
 import StatusBadge from "./StatusBadge";
 import ProjectSignature from "./ProjectSignature";
@@ -24,9 +24,9 @@ export default function FeaturedProjectCard({ project }: { project: Project }) {
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
         {/* Signature */}
         <div className="relative h-44 sm:h-56 lg:h-auto lg:min-h-[280px] border-b lg:border-b-0 lg:border-r border-[#243044]">
-          {project.coverImage ? (
+          {project.coverImage ?? project.coverThumbnail ? (
             <img
-              src={project.coverImage}
+              src={project.coverImage ?? project.coverThumbnail ?? undefined}
               alt={`${project.name} cover`}
               className="w-full h-full object-cover"
               loading="lazy"

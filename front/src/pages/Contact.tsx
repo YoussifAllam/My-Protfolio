@@ -1,6 +1,8 @@
 import { useState } from "react";
 import DownloadCV from "../components/DownloadCV";
 import { SOCIAL_LINKS, CONTACT_EMAIL, LOCATION } from "../data/social";
+import { useApi } from "../hooks/useApi";
+import { getSummary } from "../lib/api";
 
 const PROJECT_TYPES = [
   "Django Backend",
@@ -34,7 +36,7 @@ interface FormData {
 }
 
 /** Carries the whole submission into the user's mail client when the POST fails. */
-function mailtoFallback(form: FormData): string {
+function mailtoFallback(form: FormData, email: string): string {
   const subject = `Project enquiry${form.projectType ? ` — ${form.projectType}` : ""}`;
   const body = [
     `Name: ${form.name}`,
@@ -48,10 +50,21 @@ function mailtoFallback(form: FormData): string {
     .filter(Boolean)
     .join("\n");
 
-  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 export default function Contact() {
+  // Same last-known-good-then-upgrade pattern as Footer: the page renders
+  // immediately with static fallback contact info and swaps to live profile
+  // data once it loads, rather than blocking the whole page on a fetch.
+  const { data: summary } = useApi(getSummary);
+  const profile = summary?.profile;
+  const email = profile?.email || CONTACT_EMAIL;
+  const location = profile?.location || LOCATION;
+  const socialLinks = profile?.socialLinks.length
+    ? profile.socialLinks
+    : SOCIAL_LINKS.map((l) => ({ label: l.label, url: l.href }));
+
   const [formState, setFormState] = useState<FormState>("idle");
   const [copied, setCopied] = useState(false);
   const [errors, setErrors] = useState<Partial<FormData>>({});
@@ -98,7 +111,7 @@ export default function Contact() {
 
   const copyEmail = async () => {
     try {
-      await navigator.clipboard.writeText(CONTACT_EMAIL);
+      await navigator.clipboard.writeText(email);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -149,17 +162,17 @@ export default function Contact() {
             <div className="bg-[#111827] border border-[#243044] rounded-xl p-4">
               <p className="font-mono text-2xs text-[#7C8BA3] uppercase tracking-wider mb-2">Email</p>
               <a
-                href={`mailto:${CONTACT_EMAIL}`}
+                href={`mailto:${email}`}
                 className="text-sm text-[#4B9CD3] hover:text-[#F8FAFC] transition-colors break-all"
               >
-                {CONTACT_EMAIL}
+                {email}
               </a>
             </div>
 
             {/* Location */}
             <div className="bg-[#111827] border border-[#243044] rounded-xl p-4">
               <p className="font-mono text-2xs text-[#7C8BA3] uppercase tracking-wider mb-2">Location</p>
-              <p className="text-sm text-[#94A3B8]">{LOCATION}</p>
+              <p className="text-sm text-[#94A3B8]">{location}</p>
               <p className="text-xs font-mono text-[#7C8BA3] mt-0.5">Available for remote work worldwide</p>
             </div>
 
@@ -169,10 +182,10 @@ export default function Contact() {
                 Profiles
               </p>
               <ul className="flex flex-col gap-2" role="list">
-                {SOCIAL_LINKS.map(({ label, href }) => (
+                {socialLinks.map(({ label, url }) => (
                   <li key={label}>
                     <a
-                      href={href}
+                      href={url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-sm text-[#94A3B8] hover:text-[#4B9CD3] transition-colors flex items-center gap-1.5"
@@ -353,7 +366,7 @@ export default function Contact() {
                   </p>
                   <div className="flex flex-wrap items-center gap-2">
                     <a
-                      href={mailtoFallback(form)}
+                      href={mailtoFallback(form, email)}
                       className="px-4 py-2 bg-[#3776AB] hover:bg-[#4B9CD3] active:brightness-95 active:scale-[0.98] text-white text-sm font-medium rounded-lg transition-colors"
                     >
                       Email it instead
@@ -363,7 +376,7 @@ export default function Contact() {
                       onClick={copyEmail}
                       className="px-4 py-2 border border-[#243044] hover:border-[#3776AB] active:bg-[#111827] text-[#94A3B8] hover:text-[#F8FAFC] text-sm font-medium rounded-lg transition-all"
                     >
-                      {copied ? "Address copied" : `Copy ${CONTACT_EMAIL}`}
+                      {copied ? "Address copied" : `Copy ${email}`}
                     </button>
                   </div>
                 </div>

@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 
+export interface TerminalLine {
+  prompt: boolean;
+  text: string;
+}
+
 /**
- * Trimmed from five fact pairs to three: `experience` is stated in the hero
- * copy and `additional_expertise` is what the Core Specializations section is
- * for. The same five facts used to appear four times on the Home page.
+ * Fallback content, used only if no `lines` prop is passed. Trimmed from five
+ * fact pairs to three: `experience` is stated in the hero copy and
+ * `additional_expertise` is what the Core Specializations section is for.
  */
-const LINES = [
+const DEFAULT_LINES: TerminalLine[] = [
   { prompt: true, text: "whoami" },
   { prompt: false, text: "Youssif Hassan — Python Backend Developer" },
   { prompt: true, text: "main_specialization" },
@@ -14,12 +19,13 @@ const LINES = [
   { prompt: false, text: "Cairo, Egypt · available remote" },
 ];
 
-export default function TerminalCard() {
+export default function TerminalCard({ lines = DEFAULT_LINES }: { lines?: TerminalLine[] }) {
   const [visibleLines, setVisibleLines] = useState(0);
 
   useEffect(() => {
+    setVisibleLines(0);
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setVisibleLines(LINES.length);
+      setVisibleLines(lines.length);
       return;
     }
 
@@ -27,7 +33,7 @@ export default function TerminalCard() {
     let timeout: ReturnType<typeof setTimeout>;
 
     const showNext = () => {
-      if (current >= LINES.length) return;
+      if (current >= lines.length) return;
       current += 1;
       setVisibleLines(current);
       // Read the delay for the line just shown — this indexed `current` after
@@ -38,7 +44,10 @@ export default function TerminalCard() {
 
     timeout = setTimeout(showNext, 600);
     return () => clearTimeout(timeout);
-  }, []);
+    // `lines` comes from backend data that only settles once per page load —
+    // re-running the typing animation if its identity changes is intentional.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lines]);
 
   return (
     <div
@@ -58,7 +67,7 @@ export default function TerminalCard() {
           a time to screen readers. The same facts are exposed once, statically,
           in the sr-only block below. */}
       <div className="p-5 space-y-1.5" aria-hidden="true">
-        {LINES.slice(0, visibleLines).map((line, i) => (
+        {lines.slice(0, visibleLines).map((line, i) => (
           <div key={i} className="text-sm leading-relaxed">
             {line.prompt ? (
               <span>
@@ -77,7 +86,7 @@ export default function TerminalCard() {
       </div>
 
       <ul className="sr-only">
-        {LINES.filter((l) => !l.prompt).map((l) => (
+        {lines.filter((l) => !l.prompt).map((l) => (
           <li key={l.text}>{l.text}</li>
         ))}
       </ul>

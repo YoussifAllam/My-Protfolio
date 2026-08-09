@@ -1,10 +1,13 @@
 import { useParams, Link, Navigate } from "react-router";
-import { getProjectBySlug, projects, type Project } from "../data/projects";
 import TechBadge from "../components/TechBadge";
 import StatusBadge from "../components/StatusBadge";
 import ProjectSignature from "../components/ProjectSignature";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { PageLoading, PageError } from "../components/ApiState";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useDialog } from "../hooks/useDialog";
+import { useApi } from "../hooks/useApi";
+import { getProjects } from "../lib/api";
+import type { Project } from "../types/portfolio";
 
 function LinkIcon() {
   return (
@@ -20,15 +23,42 @@ function timeline(project: Project): string | null {
   return project.endDate ? `${project.startDate} — ${project.endDate}` : project.startDate;
 }
 
+interface GalleryItem {
+  thumb: string;
+  full: string;
+  caption: string;
+}
+
+/** Real uploaded gallery images first, then any legacy caption entry that
+ * happens to carry a real `src` (forward-compat; none exist in current data). */
+function buildGallery(project: Project): GalleryItem[] {
+  const fromUploads: GalleryItem[] = project.galleryImages.map((g) => ({
+    thumb: g.thumbnail ?? g.image,
+    full: g.image,
+    caption: g.caption,
+  }));
+  const fromLegacy: GalleryItem[] = project.images
+    .filter((img): img is typeof img & { src: string } => Boolean(img.src))
+    .map((img) => ({ thumb: img.src, full: img.src, caption: img.caption }));
+  return [...fromUploads, ...fromLegacy];
+}
+
 export default function ProjectDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const project = getProjectBySlug(slug ?? "");
+  const { data: projects, loading, error, retry } = useApi(getProjects);
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
-  // The gallery array is computed below from `project`, which isn't available
-  // until after the early-return guard — but hooks can't be conditional, so
-  // the arrow-key handler reads the current length from this ref instead of
-  // closing over `gallery.length` directly.
+
+  const project = useMemo(
+    () => projects?.find((p) => p.slug === slug) ?? null,
+    [projects, slug],
+  );
+  const gallery = useMemo(() => (project ? buildGallery(project) : []), [project]);
+
+  // The gallery array above isn't available until data has loaded, but hooks
+  // can't be conditional — the arrow-key handler reads the current length
+  // from this ref instead of closing over `gallery.length` directly.
   const galleryLenRef = useRef(0);
+  galleryLenRef.current = gallery.length;
 
   const handleLightboxKey = useCallback((e: KeyboardEvent) => {
     if (e.key === "ArrowLeft") setLightboxIdx((i) => (i && i > 0 ? i - 1 : i));
@@ -46,21 +76,15 @@ export default function ProjectDetail() {
     if (project) document.title = `${project.name} — Youssif Hassan`;
   }, [project]);
 
+  if (loading) return <PageLoading label="project" />;
+  if (error) return <PageError message={error} onRetry={retry} />;
   if (!project) return <Navigate to="/projects" replace />;
 
-  // Only images that actually exist. Placeholder entries are dropped entirely
-  // rather than rendered as dashed "Replace with screenshot" boxes, and indices
-  // stay consistent between the grid and the lightbox.
-  const gallery = project.images.filter(
-    (img): img is typeof img & { src: string } => Boolean(img.src),
-  );
-  galleryLenRef.current = gallery.length;
+  const currentIdx = projects!.findIndex((p) => p.slug === slug);
+  const prevProject = currentIdx > 0 ? projects![currentIdx - 1] : null;
+  const nextProject = currentIdx < projects!.length - 1 ? projects![currentIdx + 1] : null;
 
-  const currentIdx = projects.findIndex((p) => p.slug === slug);
-  const prevProject = currentIdx > 0 ? projects[currentIdx - 1] : null;
-  const nextProject = currentIdx < projects.length - 1 ? projects[currentIdx + 1] : null;
-
-  const related = projects
+  const related = projects!
     .filter((p) => p.slug !== project.slug && p.categories.some((c) => project.categories.includes(c)))
     .slice(0, 3);
 
@@ -119,8 +143,6 @@ export default function ProjectDetail() {
 
           {/* Sidebar */}
           <aside className="lg:sticky lg:top-24 self-start bg-[#0B1120] border border-[#243044] rounded-xl p-5" aria-label="Project details">
-            {/* <dt>/<dd> are only valid inside a <dl>; without it these were 12
-                orphaned definition items. */}
             <dl className="space-y-4">
             {[
               { label: "Role", value: project.role },
@@ -239,7 +261,8 @@ export default function ProjectDetail() {
         </section>
       )}
 
-      {/* Gallery */}
+      {/* Gallery. Grid tiles use the ~480×270 compressed thumbnail; the
+          lightbox loads the larger ~1920×1080 variant only when opened. */}
       {gallery.length > 0 && (
         <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-12" aria-labelledby="gallery-heading">
           <h2 id="gallery-heading" className="text-lg font-bold text-[#F8FAFC] mb-4 flex items-center gap-2">
@@ -255,7 +278,7 @@ export default function ProjectDetail() {
                 aria-label={`Open ${img.caption} full size`}
               >
                 <img
-                  src={img.src}
+                  src={img.thumb}
                   alt={img.caption}
                   className="w-full aspect-video object-cover rounded-lg border border-[#243044] hover:border-[#3776AB]/50 transition-colors"
                   loading="lazy"
@@ -266,10 +289,9 @@ export default function ProjectDetail() {
         </section>
       )}
 
-      {/* Lightbox. The previous version put its keydown handler on a
-          tabIndex={0} div that was never programmatically focused, so Escape
-          and the arrow keys silently did nothing — useDialog fixes that with a
-          document-level capture listener, plus a real focus trap and restore. */}
+      {/* Lightbox. The keydown handler lives on `document` via useDialog's
+          capture-phase listener, so Escape/arrows work regardless of what
+          inside the dialog currently has focus. */}
       {lightboxIdx !== null && gallery[lightboxIdx] && (
         <div
           ref={lightboxRef}
@@ -319,7 +341,7 @@ export default function ProjectDetail() {
           )}
 
           <img
-            src={gallery[lightboxIdx].src}
+            src={gallery[lightboxIdx].full}
             alt={gallery[lightboxIdx].caption}
             className="relative max-w-full max-h-[85vh] object-contain rounded-lg"
           />

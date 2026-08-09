@@ -25,7 +25,7 @@ export default function TechBadge({ label, variant, size = "sm" }: TechBadgeProp
     django: "bg-[#0C4B33]/30 text-[#44B78B] border border-[#0C4B33]/50",
     python: "bg-[#3776AB]/15 text-[#4B9CD3] border border-[#3776AB]/30",
     devops: "bg-[#172033] text-[#94A3B8] border border-[#243044]",
-    ai: "bg-[#0C4B33]/30 text-[#44B78B] border border-[#44B78B]/30",
+    ai: "bg-[#7C5CFF]/15 text-[#A78BFA] border border-[#7C5CFF]/30",
     dim: "bg-transparent text-[#7C8BA3] border border-[#1a2538]",
   };
 
