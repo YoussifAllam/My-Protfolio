@@ -80,7 +80,11 @@ class Project(TimestampedModel):
         help_text="Resized to at most 1600×900 and re-encoded to WebP on save.",
     )
     cover_thumbnail = models.ImageField(
-        upload_to=project_cover_path, max_length=255, null=True, blank=True, editable=False
+        upload_to=project_cover_path,
+        max_length=255,
+        null=True,
+        blank=True,
+        editable=False,
     )
 
     # Legacy caption-only gallery entries (no real files). Superseded by the
@@ -131,21 +135,29 @@ class Project(TimestampedModel):
             original, max_size=self.COVER_THUMB_SIZE, quality=self.COVER_THUMB_QUALITY
         )
         self.cover_image.save(variant_name(original_name, "cover"), full, save=False)
-        self.cover_thumbnail.save(variant_name(original_name, "thumb"), thumb, save=False)
+        self.cover_thumbnail.save(
+            variant_name(original_name, "thumb"), thumb, save=False
+        )
 
 
 class ProjectImage(TimestampedModel):
     """A gallery image with a real uploaded file, distinct from the legacy
     caption-only `Project.images` JSON list."""
 
-    project = models.ForeignKey(Project, related_name="gallery_images", on_delete=models.CASCADE)
+    project = models.ForeignKey(
+        Project, related_name="gallery_images", on_delete=models.CASCADE
+    )
     image = models.ImageField(
         upload_to=project_gallery_path,
         max_length=255,
         help_text="Resized to at most 1920×1080 and re-encoded to WebP on save.",
     )
     thumbnail = models.ImageField(
-        upload_to=project_gallery_path, max_length=255, null=True, blank=True, editable=False
+        upload_to=project_gallery_path,
+        max_length=255,
+        null=True,
+        blank=True,
+        editable=False,
     )
     caption = models.CharField(max_length=255, blank=True)
     image_type = models.CharField(max_length=40, blank=True)
@@ -174,8 +186,12 @@ class ProjectImage(TimestampedModel):
             return
         original = self.image
         original_name = original.name  # see the comment in Project._process_cover_image
-        full = build_variant(original, max_size=self.FULL_SIZE, quality=self.FULL_QUALITY)
-        thumb = build_variant(original, max_size=self.THUMB_SIZE, quality=self.THUMB_QUALITY)
+        full = build_variant(
+            original, max_size=self.FULL_SIZE, quality=self.FULL_QUALITY
+        )
+        thumb = build_variant(
+            original, max_size=self.THUMB_SIZE, quality=self.THUMB_QUALITY
+        )
         self.image.save(variant_name(original_name, "full"), full, save=False)
         self.thumbnail.save(variant_name(original_name, "thumb"), thumb, save=False)
 

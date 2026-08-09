@@ -1,7 +1,12 @@
 from django.core.management.base import BaseCommand
 
-from apps.portfolio.models import Achievement, ExperienceEntry, Profile, Project, SkillGroup
-
+from apps.portfolio.models import (
+    Achievement,
+    ExperienceEntry,
+    Profile,
+    Project,
+    SkillGroup,
+)
 
 PROFILE = {
     "name": "Youssif Hassan",
@@ -39,7 +44,10 @@ PROFILE = {
     # front/src/data/social.ts if either changes.
     "social_links": [
         {"label": "GitHub", "url": "https://github.com/YoussifAllam"},
-        {"label": "LinkedIn", "url": "https://www.linkedin.com/in/youssif-hassan-495697249/"},
+        {
+            "label": "LinkedIn",
+            "url": "https://www.linkedin.com/in/youssif-hassan-495697249/",
+        },
         {"label": "Medium", "url": "https://medium.com/@youssifhassan011"},
         {"label": "Codeforces", "url": "https://codeforces.com/profile/youssif.hassan"},
         {"label": "LeetCode", "url": "https://leetcode.com/u/youssifhassan011/"},
@@ -148,7 +156,11 @@ PROJECTS = [
         "cover_image": None,
         "images": [
             {"src": None, "caption": "Analytics Dashboard", "type": "dashboard"},
-            {"src": None, "caption": "Data Processing Architecture", "type": "architecture"},
+            {
+                "src": None,
+                "caption": "Data Processing Architecture",
+                "type": "architecture",
+            },
         ],
         "technologies": ["Python", "Django", "PostgreSQL", "REST API"],
         "features": [
@@ -200,8 +212,17 @@ PROJECTS = [
         "role": "Python Backend Developer",
         "project_type": "Commercial Product",
         "cover_image": None,
-        "images": [{"src": None, "caption": "Platform Architecture", "type": "architecture"}],
-        "technologies": ["Python", "Django", "Docker", "CI/CD", "Grafana", "Prometheus"],
+        "images": [
+            {"src": None, "caption": "Platform Architecture", "type": "architecture"}
+        ],
+        "technologies": [
+            "Python",
+            "Django",
+            "Docker",
+            "CI/CD",
+            "Grafana",
+            "Prometheus",
+        ],
         "features": [
             "Django microservices architecture",
             "Database query optimization and indexing",
@@ -224,9 +245,21 @@ PROJECTS = [
             }
         ],
         "metrics": [
-            {"label": "Faster Response Times", "value": "40%", "note": "Through DB optimization"},
-            {"label": "Shorter Deployment Time", "value": "80%", "note": "Through CI/CD"},
-            {"label": "Production Uptime", "value": "99.9%", "note": "Grafana/Prometheus"},
+            {
+                "label": "Faster Response Times",
+                "value": "40%",
+                "note": "Through DB optimization",
+            },
+            {
+                "label": "Shorter Deployment Time",
+                "value": "80%",
+                "note": "Through CI/CD",
+            },
+            {
+                "label": "Production Uptime",
+                "value": "99.9%",
+                "note": "Grafana/Prometheus",
+            },
         ],
         "links": [],
     },
@@ -280,10 +313,24 @@ PROJECTS = [
         ],
         "challenges": [],
         "metrics": [
-            {"label": "Daily API Requests", "value": "5K+", "note": "Production traffic"},
-            {"label": "Platform Uptime", "value": "99.5%", "note": "Production reliability"},
+            {
+                "label": "Daily API Requests",
+                "value": "5K+",
+                "note": "Production traffic",
+            },
+            {
+                "label": "Platform Uptime",
+                "value": "99.5%",
+                "note": "Production reliability",
+            },
         ],
-        "links": [{"type": "live-site", "label": "Visit mutqinai.com", "url": "https://mutqinai.com"}],
+        "links": [
+            {
+                "type": "live-site",
+                "label": "Visit mutqinai.com",
+                "url": "https://mutqinai.com",
+            }
+        ],
     },
     {
         "slug": "prezza-app",
@@ -310,7 +357,9 @@ PROJECTS = [
         "role": "Backend Developer",
         "project_type": "Commercial Product",
         "cover_image": None,
-        "images": [{"src": None, "caption": "Platform Architecture", "type": "architecture"}],
+        "images": [
+            {"src": None, "caption": "Platform Architecture", "type": "architecture"}
+        ],
         "technologies": [
             "Python",
             "Django",
@@ -433,7 +482,13 @@ PROJECTS = [
         ],
         "challenges": [],
         "metrics": [],
-        "links": [{"type": "landing-page", "label": "Visit emily.sa", "url": "https://emily.sa"}],
+        "links": [
+            {
+                "type": "landing-page",
+                "label": "Visit emily.sa",
+                "url": "https://emily.sa",
+            }
+        ],
     },
     {
         "slug": "speaking-fingers",
@@ -461,7 +516,14 @@ PROJECTS = [
         "project_type": "Academic / Research Project",
         "cover_image": None,
         "images": [{"src": None, "caption": "System Demo", "type": "mobile"}],
-        "technologies": ["Python", "Django", "YOLO", "CNN", "Text-to-Speech", "Computer Vision"],
+        "technologies": [
+            "Python",
+            "Django",
+            "YOLO",
+            "CNN",
+            "Text-to-Speech",
+            "Computer Vision",
+        ],
         "features": [
             "Arabic Sign Language gesture recognition",
             "YOLO-based real-time detection",
@@ -561,7 +623,13 @@ EXPERIENCE = [
             "Contributed to multi-tenant SaaS systems and delivery applications",
             "Implemented APIs, tenant isolation, authentication, permissions, and workflows",
         ],
-        "technologies": ["Python", "Django", "PostgreSQL", "REST API", "Multi-tenant SaaS"],
+        "technologies": [
+            "Python",
+            "Django",
+            "PostgreSQL",
+            "REST API",
+            "Multi-tenant SaaS",
+        ],
     },
     {
         "company": "Moussa Academy",
@@ -604,7 +672,14 @@ EXPERIENCE = [
             "Created Docker workflows reducing deployment time by 80%",
             "Delivered 40% improvement in API response times",
         ],
-        "technologies": ["Python", "Django", "Docker", "CI/CD", "Grafana", "Prometheus"],
+        "technologies": [
+            "Python",
+            "Django",
+            "Docker",
+            "CI/CD",
+            "Grafana",
+            "Prometheus",
+        ],
     },
     {
         "company": "Mutqinai",
@@ -626,16 +701,57 @@ EXPERIENCE = [
 
 SKILLS = [
     {"category": "Backend", "icon": "server", "skills": ["Python", "Django", "DRF"]},
-    {"category": "Databases", "icon": "database", "skills": ["PostgreSQL", "MySQL", "MS SQL Server"]},
-    {"category": "Caching & Queues", "icon": "lightning", "skills": ["Redis", "Celery"]},
-    {"category": "DevOps & CI/CD", "icon": "gear", "skills": ["Docker", "Docker Compose", "GitHub Actions"]},
-    {"category": "Cloud & Infrastructure", "icon": "cloud", "skills": ["AWS EC2", "Nginx", "Apache", "VPS Deployment"]},
+    {
+        "category": "Databases",
+        "icon": "database",
+        "skills": ["PostgreSQL", "MySQL", "MS SQL Server"],
+    },
+    {
+        "category": "Caching & Queues",
+        "icon": "lightning",
+        "skills": ["Redis", "Celery"],
+    },
+    {
+        "category": "DevOps & CI/CD",
+        "icon": "gear",
+        "skills": ["Docker", "Docker Compose", "GitHub Actions"],
+    },
+    {
+        "category": "Cloud & Infrastructure",
+        "icon": "cloud",
+        "skills": ["AWS EC2", "Nginx", "Apache", "VPS Deployment"],
+    },
     {"category": "Monitoring", "icon": "chart", "skills": ["Grafana", "Prometheus"]},
-    {"category": "Security", "icon": "lock", "skills": ["OAuth 2.0", "JWT", "GDPR-compliant Auth"]},
-    {"category": "Machine Learning", "icon": "brain", "skills": ["Regression", "Classification", "Time-series Forecasting"]},
-    {"category": "Deep Learning", "icon": "neural", "skills": ["CNNs", "Image Classification", "Transfer Learning", "Action Detection"]},
-    {"category": "AI Integrations", "icon": "ai", "skills": ["OpenAI GPT", "Google Gemini", "LangChain", "YOLO"]},
-    {"category": "Desktop Development", "icon": "desktop", "skills": ["PyQt5", "Multithreading", "Linux / Windows Apps"]},
+    {
+        "category": "Security",
+        "icon": "lock",
+        "skills": ["OAuth 2.0", "JWT", "GDPR-compliant Auth"],
+    },
+    {
+        "category": "Machine Learning",
+        "icon": "brain",
+        "skills": ["Regression", "Classification", "Time-series Forecasting"],
+    },
+    {
+        "category": "Deep Learning",
+        "icon": "neural",
+        "skills": [
+            "CNNs",
+            "Image Classification",
+            "Transfer Learning",
+            "Action Detection",
+        ],
+    },
+    {
+        "category": "AI Integrations",
+        "icon": "ai",
+        "skills": ["OpenAI GPT", "Google Gemini", "LangChain", "YOLO"],
+    },
+    {
+        "category": "Desktop Development",
+        "icon": "desktop",
+        "skills": ["PyQt5", "Multithreading", "Linux / Windows Apps"],
+    },
     {"category": "Version Control", "icon": "git", "skills": ["Git", "GitHub"]},
 ]
 

@@ -3,7 +3,14 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from .models import Achievement, ContactMessage, ExperienceEntry, Profile, Project, SkillGroup
+from .models import (
+    Achievement,
+    ContactMessage,
+    ExperienceEntry,
+    Profile,
+    Project,
+    SkillGroup,
+)
 from .serializers import (
     AchievementSerializer,
     ContactMessageSerializer,
@@ -38,7 +45,9 @@ class ProjectListAPIView(generics.ListAPIView):
         category = request.query_params.get("category")
         queryset = list(self.get_queryset())
         if category and category != "All":
-            queryset = [project for project in queryset if category in project.categories]
+            queryset = [
+                project for project in queryset if category in project.categories
+            ]
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -106,7 +115,9 @@ def summary(request):
         "experience": ExperienceEntrySerializer(
             ExperienceEntry.objects.all(), many=True, context=ctx
         ).data,
-        "skills": SkillGroupSerializer(SkillGroup.objects.all(), many=True, context=ctx).data,
+        "skills": SkillGroupSerializer(
+            SkillGroup.objects.all(), many=True, context=ctx
+        ).data,
         "achievements": AchievementSerializer(
             Achievement.objects.all(), many=True, context=ctx
         ).data,

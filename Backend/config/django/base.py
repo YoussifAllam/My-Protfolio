@@ -63,8 +63,7 @@ MIDDLEWARE = (
         "whitenoise.middleware.WhiteNoiseMiddleware",
     ]
     + BASIC_MIDDLEWARE  # noqa
-    + [  # noqa
-    ]
+    + []  # noqa
 )
 
 ROOT_URLCONF = "config.urls"
