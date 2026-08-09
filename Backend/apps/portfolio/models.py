@@ -1,5 +1,7 @@
 from django.db import models
 
+from apps.portfolio.utils.images import build_variant, image_field_changed, variant_name
+
 
 class TimestampedModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -31,6 +33,16 @@ class Profile(TimestampedModel):
         return self.name
 
 
+def project_cover_path(instance, filename):
+    slug = instance.slug or "unsaved"
+    return f"projects/{slug}/cover/{filename}"
+
+
+def project_gallery_path(instance, filename):
+    slug = instance.project.slug if instance.project_id else "unsaved"
+    return f"projects/{slug}/gallery/{filename}"
+
+
 class Project(TimestampedModel):
     slug = models.SlugField(unique=True)
     name = models.CharField(max_length=180)
@@ -41,6 +53,13 @@ class Project(TimestampedModel):
     featured = models.BooleanField(default=False)
     biggest_project = models.BooleanField(default=False)
     confidential = models.BooleanField(default=False)
+    # Withheld from the public API (list + detail) until filled in — an
+    # incomplete entry ("Add Project Details") is worse to a visitor than not
+    # being there at all. Toggle off in admin once the entry is real.
+    draft = models.BooleanField(
+        default=False,
+        help_text="Hidden from the public API while checked. Use for incomplete entries.",
+    )
     company = models.CharField(max_length=180, blank=True)
     year = models.CharField(max_length=40, blank=True)
     start_date = models.CharField(max_length=40, blank=True)
@@ -48,8 +67,27 @@ class Project(TimestampedModel):
     status = models.CharField(max_length=80)
     role = models.CharField(max_length=180)
     project_type = models.CharField(max_length=180)
-    cover_image = models.CharField(max_length=255, null=True, blank=True)
+
+    # Uploads are re-encoded to WebP and resized on save — see
+    # apps/portfolio/utils/images.py. `cover_image` is the detail-page hero
+    # size; `cover_thumbnail` is generated automatically for card grids and is
+    # not directly editable.
+    cover_image = models.ImageField(
+        upload_to=project_cover_path,
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text="Resized to at most 1600×900 and re-encoded to WebP on save.",
+    )
+    cover_thumbnail = models.ImageField(
+        upload_to=project_cover_path, max_length=255, null=True, blank=True, editable=False
+    )
+
+    # Legacy caption-only gallery entries (no real files). Superseded by the
+    # ProjectImage relation below for anything with an actual uploaded image;
+    # kept so existing seed captions with no file still round-trip.
     images = models.JSONField(default=list, blank=True)
+
     technologies = models.JSONField(default=list, blank=True)
     features = models.JSONField(default=list, blank=True)
     responsibilities = models.JSONField(default=list, blank=True)
@@ -58,11 +96,88 @@ class Project(TimestampedModel):
     links = models.JSONField(default=list, blank=True)
     order = models.PositiveIntegerField(default=0)
 
+    COVER_FULL_SIZE = (1600, 900)
+    COVER_FULL_QUALITY = 82
+    COVER_THUMB_SIZE = (640, 360)
+    COVER_THUMB_QUALITY = 75
+
     class Meta:
         ordering = ["order", "id"]
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        self._process_cover_image()
+        super().save(*args, **kwargs)
+
+    def _process_cover_image(self):
+        if not image_field_changed(Project, self.pk, "cover_image", self.cover_image):
+            return
+        if not self.cover_image:
+            self.cover_thumbnail = None
+            return
+        original = self.cover_image
+        # Captured as a plain string, not just aliased: `original` is the same
+        # FieldFile object as `self.cover_image`, so the first `.save(...,
+        # save=False)` below would rename it in place, and a second
+        # `variant_name(original.name, ...)` call would then be building off
+        # the already-renamed "...-cover.webp" instead of the real original.
+        original_name = original.name
+        full = build_variant(
+            original, max_size=self.COVER_FULL_SIZE, quality=self.COVER_FULL_QUALITY
+        )
+        thumb = build_variant(
+            original, max_size=self.COVER_THUMB_SIZE, quality=self.COVER_THUMB_QUALITY
+        )
+        self.cover_image.save(variant_name(original_name, "cover"), full, save=False)
+        self.cover_thumbnail.save(variant_name(original_name, "thumb"), thumb, save=False)
+
+
+class ProjectImage(TimestampedModel):
+    """A gallery image with a real uploaded file, distinct from the legacy
+    caption-only `Project.images` JSON list."""
+
+    project = models.ForeignKey(Project, related_name="gallery_images", on_delete=models.CASCADE)
+    image = models.ImageField(
+        upload_to=project_gallery_path,
+        max_length=255,
+        help_text="Resized to at most 1920×1080 and re-encoded to WebP on save.",
+    )
+    thumbnail = models.ImageField(
+        upload_to=project_gallery_path, max_length=255, null=True, blank=True, editable=False
+    )
+    caption = models.CharField(max_length=255, blank=True)
+    image_type = models.CharField(max_length=40, blank=True)
+    order = models.PositiveIntegerField(default=0)
+
+    FULL_SIZE = (1920, 1080)
+    FULL_QUALITY = 82
+    THUMB_SIZE = (480, 270)
+    THUMB_QUALITY = 75
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.caption or f"Image #{self.pk or '?'} — {self.project.name}"
+
+    def save(self, *args, **kwargs):
+        self._process_image()
+        super().save(*args, **kwargs)
+
+    def _process_image(self):
+        if not image_field_changed(ProjectImage, self.pk, "image", self.image):
+            return
+        if not self.image:
+            self.thumbnail = None
+            return
+        original = self.image
+        original_name = original.name  # see the comment in Project._process_cover_image
+        full = build_variant(original, max_size=self.FULL_SIZE, quality=self.FULL_QUALITY)
+        thumb = build_variant(original, max_size=self.THUMB_SIZE, quality=self.THUMB_QUALITY)
+        self.image.save(variant_name(original_name, "full"), full, save=False)
+        self.thumbnail.save(variant_name(original_name, "thumb"), thumb, save=False)
 
 
 class ExperienceEntry(TimestampedModel):

@@ -1,14 +1,11 @@
 venv/
 Venv/
-db.sqlite3
 __pycache__/
 __pycache__
 /__pycache__
 *.pyc
 
-media/
-media/*
-!media/.gitkeep
+
 staticfiles
 desktop.ini
 celerybeat-schedule

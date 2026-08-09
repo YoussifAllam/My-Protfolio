@@ -20,7 +20,10 @@ class ProjectListAPIView(generics.ListAPIView):
     pagination_class = None
 
     def get_queryset(self):
-        queryset = Project.objects.all()
+        # Draft entries stay in the DB (real work in progress) but never reach
+        # a visitor — an incomplete "Add Project Details" card is worse than
+        # not being listed at all.
+        queryset = Project.objects.filter(draft=False)
         featured = self.request.query_params.get("featured")
         search = self.request.query_params.get("search")
 
@@ -42,7 +45,7 @@ class ProjectListAPIView(generics.ListAPIView):
 
 
 class ProjectDetailAPIView(generics.RetrieveAPIView):
-    queryset = Project.objects.all()
+    queryset = Project.objects.filter(draft=False)
     serializer_class = ProjectSerializer
     permission_classes = [AllowAny]
     lookup_field = "slug"
@@ -79,19 +82,33 @@ class ContactMessageCreateAPIView(generics.CreateAPIView):
 @permission_classes([AllowAny])
 def summary(request):
     profile = Profile.objects.first()
+    published_projects = Project.objects.filter(draft=False)
+
     categories = ["All"]
-    for project in Project.objects.all():
+    for project in published_projects:
         for category in project.categories:
             if category not in categories:
                 categories.append(category)
 
+    # `context={"request": request}` is what lets ImageField serialize as an
+    # absolute URL (https://api.example.com/media/...) instead of a bare path
+    # — without it, ProjectListAPIView/ProjectDetailAPIView would still work
+    # (GenericAPIView supplies request context automatically) but this
+    # function-based view has to pass it explicitly.
+    ctx = {"request": request}
     data = {
-        "profile": ProfileSerializer(profile).data if profile else None,
-        "featuredProjects": ProjectSerializer(Project.objects.filter(featured=True), many=True).data,
-        "projectsCount": Project.objects.count(),
+        "profile": ProfileSerializer(profile, context=ctx).data if profile else None,
+        "featuredProjects": ProjectSerializer(
+            published_projects.filter(featured=True), many=True, context=ctx
+        ).data,
+        "projectsCount": published_projects.count(),
         "categories": categories,
-        "experience": ExperienceEntrySerializer(ExperienceEntry.objects.all(), many=True).data,
-        "skills": SkillGroupSerializer(SkillGroup.objects.all(), many=True).data,
-        "achievements": AchievementSerializer(Achievement.objects.all(), many=True).data,
+        "experience": ExperienceEntrySerializer(
+            ExperienceEntry.objects.all(), many=True, context=ctx
+        ).data,
+        "skills": SkillGroupSerializer(SkillGroup.objects.all(), many=True, context=ctx).data,
+        "achievements": AchievementSerializer(
+            Achievement.objects.all(), many=True, context=ctx
+        ).data,
     }
     return Response(data, status=status.HTTP_200_OK)

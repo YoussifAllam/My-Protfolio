@@ -35,12 +35,15 @@ PROFILE = {
         {"value": "80%", "label": "Shorter Deployment Cycles"},
         {"value": "99.9%", "label": "Production Uptime"},
     ],
+    # These are the verified, live profile URLs — keep in sync with
+    # front/src/data/social.ts if either changes.
     "social_links": [
-        {"label": "GitHub", "url": "https://github.com/youssif-hassan"},
-        {"label": "LinkedIn", "url": "https://linkedin.com/in/youssif-hassan"},
-        {"label": "Medium", "url": "https://medium.com/@youssif-hassan"},
-        {"label": "Codeforces", "url": "https://codeforces.com/profile/youssif-hassan"},
-        {"label": "LeetCode", "url": "https://leetcode.com/youssif-hassan"},
+        {"label": "GitHub", "url": "https://github.com/YoussifAllam"},
+        {"label": "LinkedIn", "url": "https://www.linkedin.com/in/youssif-hassan-495697249/"},
+        {"label": "Medium", "url": "https://medium.com/@youssifhassan011"},
+        {"label": "Codeforces", "url": "https://codeforces.com/profile/youssif.hassan"},
+        {"label": "LeetCode", "url": "https://leetcode.com/u/youssifhassan011/"},
+        {"label": "Kaggle", "url": "https://www.kaggle.com/youssifhassan"},
     ],
     "about_sections": [
         {
@@ -478,6 +481,7 @@ PROJECTS = [
     {
         "slug": "pyqt5-project-placeholder-1",
         "name": "PyQt5 Project - Add Project Details",
+        "draft": True,
         "subtitle": "Desktop application built with PyQt5 - Edit to add subtitle",
         "short_description": (
             "A PyQt5 desktop application - replace this placeholder with your project "
@@ -510,6 +514,7 @@ PROJECTS = [
     {
         "slug": "desktop-system-placeholder-2",
         "name": "Desktop System - Add Project Details",
+        "draft": True,
         "subtitle": "PyQt5 desktop system - Edit to add subtitle",
         "short_description": (
             "A PyQt5 desktop system - replace this placeholder with your project description, "

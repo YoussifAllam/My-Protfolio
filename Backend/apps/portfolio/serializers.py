@@ -6,6 +6,7 @@ from .models import (
     ExperienceEntry,
     Profile,
     Project,
+    ProjectImage,
     SkillGroup,
 )
 
@@ -19,13 +20,15 @@ class CamelCaseModelSerializer(serializers.ModelSerializer):
         "end_date": "endDate",
         "project_type": "projectType",
         "cover_image": "coverImage",
+        "cover_thumbnail": "coverThumbnail",
+        "gallery_images": "galleryImages",
+        "image_type": "imageType",
         "primary_role": "primaryRole",
         "tech_stack": "techStack",
         "social_links": "socialLinks",
         "about_sections": "aboutSections",
         "highlight_label": "highlightLabel",
         "special_label": "specialLabel",
-        "project_type": "projectType",
     }
 
     def to_representation(self, instance):
@@ -50,7 +53,18 @@ class ProfileSerializer(CamelCaseModelSerializer):
         exclude = ["created_at", "updated_at"]
 
 
+class ProjectImageSerializer(CamelCaseModelSerializer):
+    class Meta:
+        model = ProjectImage
+        exclude = ["created_at", "updated_at", "order", "project"]
+
+
 class ProjectSerializer(CamelCaseModelSerializer):
+    # Real uploaded gallery images (see ProjectImage). Distinct from the
+    # legacy caption-only `images` JSON list, which stays for entries that
+    # only ever had a caption and no real file.
+    gallery_images = ProjectImageSerializer(many=True, read_only=True)
+
     class Meta:
         model = Project
         exclude = ["created_at", "updated_at", "order"]
