@@ -1,13 +1,5 @@
 import { Link } from "react-router";
-
-const SOCIAL_LINKS = [
-  { label: "GitHub", href: "https://github.com/YoussifAllam", placeholder: false },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/youssif-hassan-495697249/", placeholder: false },
-  { label: "Medium", href: "https://medium.com/@youssifhassan011", placeholder: false },
-  { label: "Codeforces", href: "https://codeforces.com/profile/youssif.hassan", placeholder: false },
-  { label: "LeetCode", href: "https://leetcode.com/u/youssifhassan011/", placeholder: false },
-  { label: "Kaggle", href: "https://www.kaggle.com/youssifhassan", placeholder: false },
-];
+import { SOCIAL_LINKS, CONTACT_EMAIL, LOCATION } from "../data/social";
 
 const NAV_LINKS = [
   { to: "/", label: "Home" },
@@ -32,12 +24,12 @@ export default function Footer() {
             </div>
             <p className="text-[#64748B] text-sm font-mono mb-4">Python Backend Developer</p>
             <a
-              href="mailto:youssifhassan011@gmail.com"
+              href={`mailto:${CONTACT_EMAIL}`}
               className="text-sm text-[#94A3B8] hover:text-[#4B9CD3] transition-colors"
             >
-              youssifhassan011@gmail.com
+              {CONTACT_EMAIL}
             </a>
-            <p className="text-xs text-[#64748B] mt-1">Cairo, Egypt</p>
+            <p className="text-xs text-[#64748B] mt-1">{LOCATION}</p>
           </div>
 
           {/* Navigation */}
@@ -72,12 +64,8 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-[#94A3B8] hover:text-[#4B9CD3] transition-colors flex items-center gap-1.5"
-                    aria-label={`${link.label}${link.placeholder ? " (edit URL in code)" : ""}`}
                   >
                     {link.label}
-                    {link.placeholder && (
-                      <span className="text-[10px] font-mono text-[#64748B]">(edit URL)</span>
-                    )}
                     <svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true" className="opacity-40">
                       <path d="M3.5 3a.5.5 0 000 1H7.29L3.15 8.15a.5.5 0 10.7.7L8 4.71V8.5a.5.5 0 001 0v-5a.5.5 0 00-.5-.5h-5z"/>
                     </svg>

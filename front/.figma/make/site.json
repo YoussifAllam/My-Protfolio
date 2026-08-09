@@ -1,7 +1,15 @@
 {
-  "description": "Streamline project creation with an intuitive tool designed to help users quickly build and manage their ideas efficiently in one platform.",
+  "title": "Youssif Hassan — Python Backend Developer",
+  "description": "Python backend developer building scalable Django systems, REST APIs, PyQt5 desktop applications, and containerized deployments. Based in Cairo, Egypt. Available for remote work worldwide.",
+  "language": "en",
   "robots": {
-    "index": false
+    "index": true
+  },
+  "icons": {
+    "icon": "/favicon.svg"
+  },
+  "openGraph": {
+    "image": "/og-cover.png"
   },
   "accessibility": {
     "addBypassLinks": false,

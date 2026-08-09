@@ -3,6 +3,7 @@ import ArchitectureDiagram from "../components/ArchitectureDiagram";
 import TerminalCard from "../components/TerminalCard";
 import TechBadge from "../components/TechBadge";
 import ProjectCard from "../components/ProjectCard";
+import DownloadCV from "../components/DownloadCV";
 import { getFeaturedProjects } from "../data/projects";
 
 const HERO_TECHS = [
@@ -135,13 +136,7 @@ export default function Home() {
               >
                 Explore My Projects
               </Link>
-              <a
-                href="#download-cv"
-                id="download-cv"
-                className="px-5 py-2.5 bg-[#172033] hover:bg-[#111827] border border-[#243044] hover:border-[#3776AB] text-[#F8FAFC] font-semibold text-sm rounded-lg transition-all duration-150"
-              >
-                Download CV
-              </a>
+              <DownloadCV variant="hero" />
               <Link
                 to="/contact"
                 className="px-5 py-2.5 border border-[#243044] hover:border-[#3776AB] text-[#94A3B8] hover:text-[#F8FAFC] font-semibold text-sm rounded-lg transition-all duration-150"

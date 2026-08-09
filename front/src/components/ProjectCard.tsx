@@ -14,8 +14,7 @@ function PlaceholderCover({ name }: { name: string }) {
         backgroundImage: "repeating-linear-gradient(0deg, #243044 0px, #243044 1px, transparent 1px, transparent 32px), repeating-linear-gradient(90deg, #243044 0px, #243044 1px, transparent 1px, transparent 32px)"
       }} />
       <div className="relative z-10 flex flex-col items-center gap-2">
-        <span className="font-mono text-[10px] text-[#64748B]">// cover image</span>
-        <span className="font-mono text-xs text-[#3776AB] text-center px-4 line-clamp-2">{name}</span>
+        <span className="font-mono text-xs text-[#4B9CD3] text-center px-4 line-clamp-2">{name}</span>
       </div>
     </div>
   );
@@ -67,7 +66,11 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         {/* Header */}
         <div className="flex items-start justify-between gap-2 mb-2">
           <h3 className="font-semibold text-[#F8FAFC] text-base leading-snug">{project.name}</h3>
-          <span className="text-[11px] font-mono text-[#64748B] whitespace-nowrap mt-0.5">{project.year}</span>
+          {project.year && (
+            <span className="text-[11px] font-mono text-[#64748B] whitespace-nowrap mt-0.5">
+              {project.year}
+            </span>
+          )}
         </div>
 
         <div className="mb-3">

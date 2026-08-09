@@ -1,8 +1,8 @@
 import { useParams, Link, Navigate } from "react-router";
-import { getProjectBySlug, projects } from "../data/projects";
+import { getProjectBySlug, projects, type Project } from "../data/projects";
 import TechBadge from "../components/TechBadge";
 import StatusBadge from "../components/StatusBadge";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function LinkIcon() {
   return (
@@ -12,13 +12,10 @@ function LinkIcon() {
   );
 }
 
-function PlaceholderImage({ caption }: { caption: string }) {
-  return (
-    <div className="aspect-video bg-[#0B1120] border border-dashed border-[#243044] rounded-lg flex flex-col items-center justify-center p-4">
-      <p className="font-mono text-[11px] text-[#64748B] text-center">{caption}</p>
-      <p className="text-[11px] text-[#3776AB] mt-1">Replace with screenshot</p>
-    </div>
-  );
+/** "April 2026 — Present" style range, or null when no dates are recorded. */
+function timeline(project: Project): string | null {
+  if (!project.startDate) return null;
+  return project.endDate ? `${project.startDate} — ${project.endDate}` : project.startDate;
 }
 
 export default function ProjectDetail() {
@@ -26,7 +23,19 @@ export default function ProjectDetail() {
   const project = getProjectBySlug(slug ?? "");
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
 
+  // Must run before the early return below — hooks cannot be conditional.
+  useEffect(() => {
+    if (project) document.title = `${project.name} — Youssif Hassan`;
+  }, [project]);
+
   if (!project) return <Navigate to="/projects" replace />;
+
+  // Only images that actually exist. Placeholder entries are dropped entirely
+  // rather than rendered as dashed "Replace with screenshot" boxes, and indices
+  // stay consistent between the grid and the lightbox.
+  const gallery = project.images.filter(
+    (img): img is typeof img & { src: string } => Boolean(img.src),
+  );
 
   const currentIdx = projects.findIndex((p) => p.slug === slug);
   const prevProject = currentIdx > 0 ? projects[currentIdx - 1] : null;
@@ -60,8 +69,7 @@ export default function ProjectDetail() {
               <div className="absolute inset-0 opacity-5" style={{
                 backgroundImage: "repeating-linear-gradient(0deg, #3776AB 0px, #3776AB 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, #3776AB 0px, #3776AB 1px, transparent 1px, transparent 40px)"
               }} />
-              <p className="font-mono text-xs text-[#64748B] z-10">// cover image</p>
-              <p className="text-sm text-[#3776AB] mt-1 z-10">{project.name}</p>
+              <p className="text-sm text-[#4B9CD3] z-10">{project.name}</p>
             </div>
           )}
           {project.confidential && (
@@ -99,16 +107,18 @@ export default function ProjectDetail() {
           <aside className="lg:sticky lg:top-24 self-start bg-[#0B1120] border border-[#243044] rounded-xl p-5 space-y-4" aria-label="Project details">
             {[
               { label: "Role", value: project.role },
-              { label: "Timeline", value: project.endDate ? `${project.startDate} — ${project.endDate}` : project.startDate },
+              { label: "Timeline", value: timeline(project) },
               { label: "Type", value: project.projectType },
               { label: "Status", value: project.status },
               { label: "Company", value: project.company },
-            ].map(({ label, value }) => (
-              <div key={label}>
-                <dt className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider mb-1">{label}</dt>
-                <dd className="text-sm text-[#F8FAFC]">{value}</dd>
-              </div>
-            ))}
+            ]
+              .filter((f): f is { label: string; value: string } => Boolean(f.value))
+              .map(({ label, value }) => (
+                <div key={label}>
+                  <dt className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider mb-1">{label}</dt>
+                  <dd className="text-sm text-[#F8FAFC]">{value}</dd>
+                </div>
+              ))}
 
             <div>
               <dt className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider mb-2">Technologies</dt>
@@ -212,30 +222,26 @@ export default function ProjectDetail() {
       )}
 
       {/* Gallery */}
-      {project.images.length > 0 && (
+      {gallery.length > 0 && (
         <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-12" aria-labelledby="gallery-heading">
           <h2 id="gallery-heading" className="text-lg font-bold text-[#F8FAFC] mb-4 flex items-center gap-2">
             <span className="w-1 h-4 rounded-full bg-[#3776AB]" aria-hidden="true" />
             Gallery
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {project.images.map((img, i) => (
+            {gallery.map((img, i) => (
               <button
                 key={i}
-                onClick={() => img.src && setLightboxIdx(i)}
-                className={`text-left ${img.src ? "cursor-zoom-in" : "cursor-default"}`}
-                aria-label={img.src ? `Open ${img.caption} full size` : img.caption}
+                onClick={() => setLightboxIdx(i)}
+                className="text-left cursor-zoom-in"
+                aria-label={`Open ${img.caption} full size`}
               >
-                {img.src ? (
-                  <img
-                    src={img.src}
-                    alt={img.caption}
-                    className="w-full aspect-video object-cover rounded-lg border border-[#243044] hover:border-[#3776AB]/50 transition-colors"
-                    loading="lazy"
-                  />
-                ) : (
-                  <PlaceholderImage caption={img.caption} />
-                )}
+                <img
+                  src={img.src}
+                  alt={img.caption}
+                  className="w-full aspect-video object-cover rounded-lg border border-[#243044] hover:border-[#3776AB]/50 transition-colors"
+                  loading="lazy"
+                />
               </button>
             ))}
           </div>
@@ -243,7 +249,7 @@ export default function ProjectDetail() {
       )}
 
       {/* Lightbox */}
-      {lightboxIdx !== null && project.images[lightboxIdx]?.src && (
+      {lightboxIdx !== null && gallery[lightboxIdx] && (
         <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
           role="dialog"
@@ -253,7 +259,7 @@ export default function ProjectDetail() {
           onKeyDown={(e) => {
             if (e.key === "Escape") setLightboxIdx(null);
             if (e.key === "ArrowLeft" && lightboxIdx > 0) setLightboxIdx(lightboxIdx - 1);
-            if (e.key === "ArrowRight" && lightboxIdx < project.images.length - 1) setLightboxIdx(lightboxIdx + 1);
+            if (e.key === "ArrowRight" && lightboxIdx < gallery.length - 1) setLightboxIdx(lightboxIdx + 1);
           }}
           tabIndex={0}
         >
@@ -267,14 +273,14 @@ export default function ProjectDetail() {
             </svg>
           </button>
           <img
-            src={project.images[lightboxIdx].src!}
-            alt={project.images[lightboxIdx].caption}
+            src={gallery[lightboxIdx].src}
+            alt={gallery[lightboxIdx].caption}
             className="max-w-full max-h-[85vh] object-contain rounded-lg"
             onClick={(e) => e.stopPropagation()}
           />
           <p className="absolute bottom-4 left-0 right-0 text-center text-sm text-white/60">
-            {project.images[lightboxIdx].caption}
-            <span className="ml-3 font-mono text-xs text-white/40">{lightboxIdx + 1} / {project.images.length}</span>
+            {gallery[lightboxIdx].caption}
+            <span className="ml-3 font-mono text-xs text-white/40">{lightboxIdx + 1} / {gallery.length}</span>
           </p>
         </div>
       )}

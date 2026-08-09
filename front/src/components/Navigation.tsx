@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router";
+import DownloadCV from "./DownloadCV";
 
 const LINKS = [
   { to: "/", label: "Home" },
@@ -106,13 +107,7 @@ export default function Navigation() {
 
           {/* CTA */}
           <div className="hidden md:flex items-center gap-3">
-            <a
-              href="#download-cv"
-              className="px-4 py-2 text-sm font-medium bg-[#3776AB] hover:bg-[#4B9CD3] text-white rounded transition-colors duration-150 font-sans"
-              aria-label="Download CV"
-            >
-              Download CV
-            </a>
+            <DownloadCV variant="primary" />
           </div>
 
           {/* Mobile menu button */}
@@ -159,12 +154,7 @@ export default function Navigation() {
               </li>
             ))}
           </ul>
-          <a
-            href="#download-cv"
-            className="w-full py-3 text-center text-sm font-semibold bg-[#3776AB] hover:bg-[#4B9CD3] text-white rounded-lg transition-colors"
-          >
-            Download CV
-          </a>
+          <DownloadCV variant="block" />
         </div>
       )}
     </>

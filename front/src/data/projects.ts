@@ -36,9 +36,13 @@ export interface Project {
   featured: boolean;
   biggestProject: boolean;
   confidential: boolean;
-  company: string;
-  year: string;
-  startDate: string;
+  /** Withheld from the public list until the entry is filled in. */
+  draft?: boolean;
+  /** null means "not filled in yet" — the UI omits the field rather than showing a placeholder. */
+  company: string | null;
+  year: string | null;
+  /** "YYYY-MM". Sorted lexicographically, which is chronological for this format. */
+  startDate: string | null;
   endDate: string | null;
   status: string;
   role: string;
@@ -53,7 +57,7 @@ export interface Project {
   links: ProjectLink[];
 }
 
-export const projects: Project[] = [
+const ALL_PROJECTS: Project[] = [
   {
     id: 1,
     slug: "jafco-analytics",
@@ -77,10 +81,10 @@ Developed as part of Youssif's role at ADEX Jordan Company, this project involve
     projectType: "Enterprise Commercial Product",
     coverImage: null,
     images: [
-      { src: null, caption: "Analytics Dashboard — Replace with verified screenshot", type: "dashboard" },
-      { src: null, caption: "Branch-level Reports — Replace with verified screenshot", type: "dashboard" },
+      { src: null, caption: "Analytics Dashboard", type: "dashboard" },
+      { src: null, caption: "Branch-level Reports", type: "dashboard" },
       { src: null, caption: "Data Processing Architecture — Illustrative diagram", type: "architecture" },
-      { src: null, caption: "API Overview — Replace with verified screenshot", type: "api" },
+      { src: null, caption: "API Overview", type: "api" },
     ],
     technologies: ["Python", "Django", "PostgreSQL", "REST API"],
     features: [
@@ -136,8 +140,8 @@ The work produced measurable production improvements: 40% faster API response ti
     projectType: "Commercial Product",
     coverImage: null,
     images: [
-      { src: null, caption: "Platform Architecture — Replace with verified screenshot", type: "architecture" },
-      { src: null, caption: "Monitoring Dashboard — Replace with verified screenshot", type: "dashboard" },
+      { src: null, caption: "Platform Architecture", type: "architecture" },
+      { src: null, caption: "Monitoring Dashboard", type: "dashboard" },
     ],
     technologies: ["Python", "Django", "Docker", "Docker Compose", "CI/CD", "Grafana", "Prometheus"],
     features: [
@@ -194,7 +198,7 @@ The platform integrates OpenAI GPT, Google Gemini, and LangChain for AI-driven w
     projectType: "Commercial AI Product",
     coverImage: null,
     images: [
-      { src: null, caption: "Platform Interface — Replace with verified screenshot", type: "desktop" },
+      { src: null, caption: "Platform Interface", type: "desktop" },
     ],
     technologies: ["Python", "Django", "Django REST Framework", "OpenAI GPT", "Google Gemini", "LangChain", "Apache", "VPS"],
     features: [
@@ -236,17 +240,17 @@ The architecture uses PostgreSQL for data persistence, Redis and Celery for asyn
     featured: true,
     biggestProject: false,
     confidential: false,
-    company: "— Edit to add company",
-    year: "— Edit to add year",
-    startDate: "— Edit to add start date",
+    company: null,
+    year: null,
+    startDate: null,
     endDate: null,
     status: "Under Development",
     role: "Backend Developer",
     projectType: "Commercial Product",
     coverImage: null,
     images: [
-      { src: null, caption: "Platform Architecture — Replace with verified screenshot", type: "architecture" },
-      { src: null, caption: "Admin Dashboard — Replace with verified screenshot", type: "dashboard" },
+      { src: null, caption: "Platform Architecture", type: "architecture" },
+      { src: null, caption: "Admin Dashboard", type: "dashboard" },
     ],
     technologies: [
       "Python", "Django", "Django REST Framework", "PostgreSQL", "Celery",
@@ -291,16 +295,16 @@ The ML component involved statistical analysis on health datasets, deep neural n
     biggestProject: false,
     confidential: false,
     company: "Qassim University (Collaboration)",
-    year: "— Edit to add year",
-    startDate: "— Edit to add start date",
-    endDate: "— Edit to add end date",
+    year: null,
+    startDate: null,
+    endDate: null,
     status: "Research Project",
     role: "Full-Stack Developer and Machine Learning Engineer",
     projectType: "Academic Research Project",
     coverImage: null,
     images: [
-      { src: null, caption: "Platform Interface — Replace with screenshot", type: "desktop" },
-      { src: null, caption: "ML Model Architecture — Replace with diagram", type: "architecture" },
+      { src: null, caption: "Platform Interface", type: "desktop" },
+      { src: null, caption: "ML Model Architecture", type: "architecture" },
     ],
     technologies: [
       "Python", "Django", "React", "Docker", "Nginx",
@@ -347,16 +351,16 @@ The backend was built with Django, supporting multi-vendor product and transacti
     featured: false,
     biggestProject: false,
     confidential: false,
-    company: "— Edit to add company",
-    year: "— Edit to add year",
-    startDate: "— Edit to add start date",
-    endDate: "— Edit to add end date",
+    company: null,
+    year: null,
+    startDate: null,
+    endDate: null,
     status: "Production",
     role: "Backend Developer",
     projectType: "Commercial Product",
     coverImage: null,
     images: [
-      { src: null, caption: "Platform Interface — Replace with screenshot", type: "desktop" },
+      { src: null, caption: "Platform Interface", type: "desktop" },
     ],
     technologies: ["Python", "Django", "VPS"],
     features: [
@@ -400,8 +404,8 @@ The project was recognized with first place at the Annual Student Conference for
     projectType: "Academic / Research Project",
     coverImage: null,
     images: [
-      { src: null, caption: "System Demo — Replace with screenshot", type: "mobile" },
-      { src: null, caption: "Architecture Diagram — Replace with diagram", type: "architecture" },
+      { src: null, caption: "System Demo", type: "mobile" },
+      { src: null, caption: "Architecture Diagram", type: "architecture" },
     ],
     technologies: ["Python", "Django", "YOLO", "CNN", "Text-to-Speech", "Computer Vision", "VPS"],
     features: [
@@ -438,16 +442,17 @@ The project was recognized with first place at the Annual Student Conference for
     featured: false,
     biggestProject: false,
     confidential: false,
-    company: "— Edit to add company or client",
-    year: "— Edit",
-    startDate: "— Edit",
+    draft: true,
+    company: null,
+    year: null,
+    startDate: null,
     endDate: null,
-    status: "— Edit to add status",
+    status: "Draft",
     role: "Python Desktop Developer",
     projectType: "Desktop Application",
     coverImage: null,
     images: [
-      { src: null, caption: "App Screenshot — Replace with actual screenshot", type: "desktop" },
+      { src: null, caption: "App Screenshot", type: "desktop" },
     ],
     technologies: ["Python", "PyQt5", "— Add technologies"],
     features: ["— Add main feature", "— Add main feature", "— Add main feature"],
@@ -472,16 +477,17 @@ The project was recognized with first place at the Annual Student Conference for
     featured: false,
     biggestProject: false,
     confidential: false,
-    company: "— Edit to add company or client",
-    year: "— Edit",
-    startDate: "— Edit",
+    draft: true,
+    company: null,
+    year: null,
+    startDate: null,
     endDate: null,
-    status: "— Edit to add status",
+    status: "Draft",
     role: "Python Desktop Developer",
     projectType: "Desktop Application",
     coverImage: null,
     images: [
-      { src: null, caption: "App Screenshot — Replace with actual screenshot", type: "desktop" },
+      { src: null, caption: "App Screenshot", type: "desktop" },
     ],
     technologies: ["Python", "PyQt5", "— Add technologies"],
     features: ["— Add main feature", "— Add main feature"],
@@ -495,9 +501,21 @@ The project was recognized with first place at the Annual Student Conference for
   },
 ];
 
+/** Public list. Draft entries stay in ALL_PROJECTS but never reach a visitor. */
+export const projects: Project[] = ALL_PROJECTS.filter((p) => !p.draft);
+
 export const getFeaturedProjects = () => projects.filter((p) => p.featured);
 export const getProjectBySlug = (slug: string) => projects.find((p) => p.slug === slug);
 export const getProjectsByCategory = (category: string) =>
   category === "All" ? projects : projects.filter((p) => p.categories.includes(category));
 
-export const CATEGORIES = ["All", "Backend", "Full Stack", "AI", "Desktop Apps", "DevOps"];
+/**
+ * Filter order is curated, but membership is derived — a category with no
+ * published projects must not render as an always-empty filter chip.
+ */
+const CATEGORY_ORDER = ["Backend", "Full Stack", "AI", "Desktop Apps", "DevOps"];
+
+export const CATEGORIES = [
+  "All",
+  ...CATEGORY_ORDER.filter((c) => projects.some((p) => p.categories.includes(c))),
+];

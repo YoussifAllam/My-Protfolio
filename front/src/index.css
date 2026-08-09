@@ -39,6 +39,9 @@
 
 html {
   scroll-behavior: smooth;
+  /* The site is permanently dark. Without this, native chrome — <select>
+     dropdowns, Firefox scrollbars, input autofill — renders in light mode. */
+  color-scheme: dark;
 }
 
 body {

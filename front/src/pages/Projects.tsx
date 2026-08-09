@@ -1,8 +1,18 @@
 import { useState, useMemo } from "react";
-import { projects, CATEGORIES } from "../data/projects";
+import { projects, CATEGORIES, type Project } from "../data/projects";
 import ProjectCard from "../components/ProjectCard";
 
 type SortKey = "featured" | "newest" | "oldest" | "alpha";
+
+/** Undated projects sort to the end under both date orders, never to the top. */
+const dateKey = (p: Project, whenMissing: string) => p.startDate ?? whenMissing;
+
+const SORTERS: Record<SortKey, (a: Project, b: Project) => number> = {
+  featured: (a, b) => Number(b.featured) - Number(a.featured) || a.name.localeCompare(b.name),
+  newest: (a, b) => dateKey(b, "0000-00").localeCompare(dateKey(a, "0000-00")),
+  oldest: (a, b) => dateKey(a, "9999-99").localeCompare(dateKey(b, "9999-99")),
+  alpha: (a, b) => a.name.localeCompare(b.name),
+};
 
 export default function Projects() {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -10,7 +20,7 @@ export default function Projects() {
   const [sort, setSort] = useState<SortKey>("featured");
 
   const filtered = useMemo(() => {
-    let list = projects.filter((p) => {
+    const list = projects.filter((p) => {
       const matchCat = activeCategory === "All" || p.categories.includes(activeCategory);
       const q = search.toLowerCase();
       const matchSearch =
@@ -23,12 +33,7 @@ export default function Projects() {
       return matchCat && matchSearch;
     });
 
-    if (sort === "featured") list = list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
-    else if (sort === "newest") list = list.sort((a, b) => (b.startDate > a.startDate ? 1 : -1));
-    else if (sort === "oldest") list = list.sort((a, b) => (a.startDate > b.startDate ? 1 : -1));
-    else if (sort === "alpha") list = list.sort((a, b) => a.name.localeCompare(b.name));
-
-    return list;
+    return list.sort(SORTERS[sort]);
   }, [activeCategory, search, sort]);
 
   const categoryCounts = useMemo(() => {

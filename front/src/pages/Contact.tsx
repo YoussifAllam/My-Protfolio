@@ -1,4 +1,6 @@
 import { useState } from "react";
+import DownloadCV from "../components/DownloadCV";
+import { SOCIAL_LINKS, CONTACT_EMAIL, LOCATION } from "../data/social";
 
 const PROJECT_TYPES = [
   "Django Backend",
@@ -31,8 +33,27 @@ interface FormData {
   message: string;
 }
 
+/** Carries the whole submission into the user's mail client when the POST fails. */
+function mailtoFallback(form: FormData): string {
+  const subject = `Project enquiry${form.projectType ? ` — ${form.projectType}` : ""}`;
+  const body = [
+    `Name: ${form.name}`,
+    `Email: ${form.email}`,
+    form.company && `Company: ${form.company}`,
+    form.projectType && `Project type: ${form.projectType}`,
+    form.budget && `Budget: ${form.budget}`,
+    "",
+    form.message,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
 export default function Contact() {
   const [formState, setFormState] = useState<FormState>("idle");
+  const [copied, setCopied] = useState(false);
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [form, setForm] = useState<FormData>({
     name: "",
@@ -57,9 +78,33 @@ export default function Contact() {
     e.preventDefault();
     if (!validate()) return;
     setFormState("loading");
-    // Simulate async — wire to real endpoint when ready
-    await new Promise((r) => setTimeout(r, 1400));
-    setFormState("success");
+    try {
+      const endpoint = import.meta.env.VITE_CONTACT_ENDPOINT;
+      if (!endpoint) throw new Error("VITE_CONTACT_ENDPOINT is not configured");
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // Field names already match the DRF ContactMessageSerializer contract.
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error(`Request failed with ${res.status}`);
+      setFormState("success");
+    } catch {
+      // Never fake a success. The error branch below carries a prefilled
+      // mailto so a failed submit is still a conversion.
+      setFormState("error");
+    }
+  };
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(CONTACT_EMAIL);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard blocked (insecure context or denied permission) — the mailto
+      // link beside this button still works, so there is nothing to recover.
+    }
   };
 
   const handleChange = (
@@ -99,44 +144,53 @@ export default function Contact() {
             <div className="bg-[#111827] border border-[#243044] rounded-xl p-4">
               <p className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider mb-2">Email</p>
               <a
-                href="mailto:youssifhassan011@gmail.com"
+                href={`mailto:${CONTACT_EMAIL}`}
                 className="text-sm text-[#4B9CD3] hover:text-[#F8FAFC] transition-colors break-all"
               >
-                youssifhassan011@gmail.com
+                {CONTACT_EMAIL}
               </a>
             </div>
 
             {/* Location */}
             <div className="bg-[#111827] border border-[#243044] rounded-xl p-4">
               <p className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider mb-2">Location</p>
-              <p className="text-sm text-[#94A3B8]">Cairo, Egypt</p>
+              <p className="text-sm text-[#94A3B8]">{LOCATION}</p>
               <p className="text-xs font-mono text-[#64748B] mt-0.5">Available for remote work worldwide</p>
             </div>
 
             {/* Social / profile links */}
-            {[
-              { label: "LinkedIn", placeholder: "Add your LinkedIn URL" },
-              { label: "GitHub", placeholder: "Add your GitHub URL" },
-              { label: "Medium", placeholder: "Add your Medium URL" },
-              { label: "Codeforces", placeholder: "Add your Codeforces URL" },
-              { label: "LeetCode", placeholder: "Add your LeetCode URL" },
-            ].map(({ label, placeholder }) => (
-              <div key={label} className="flex items-center justify-between text-sm">
-                <span className="text-[#94A3B8]">{label}</span>
-                <span className="font-mono text-[10px] text-[#64748B]">{placeholder}</span>
-              </div>
-            ))}
+            <div className="bg-[#111827] border border-[#243044] rounded-xl p-4">
+              <p className="font-mono text-[10px] text-[#64748B] uppercase tracking-wider mb-3">
+                Profiles
+              </p>
+              <ul className="flex flex-col gap-2" role="list">
+                {SOCIAL_LINKS.map(({ label, href }) => (
+                  <li key={label}>
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-[#94A3B8] hover:text-[#4B9CD3] transition-colors flex items-center gap-1.5"
+                    >
+                      {label}
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 12 12"
+                        fill="currentColor"
+                        aria-hidden="true"
+                        className="opacity-40"
+                      >
+                        <path d="M3.5 3a.5.5 0 000 1H7.29L3.15 8.15a.5.5 0 10.7.7L8 4.71V8.5a.5.5 0 001 0v-5a.5.5 0 00-.5-.5h-5z" />
+                      </svg>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
             {/* Download CV */}
-            <a
-              href="#download-cv"
-              className="flex items-center justify-center gap-2 w-full py-2.5 bg-[#172033] hover:bg-[#111827] border border-[#243044] hover:border-[#3776AB] text-[#94A3B8] hover:text-[#F8FAFC] text-sm font-medium rounded-lg transition-all"
-            >
-              <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-              Download CV
-            </a>
+            <DownloadCV variant="outline" showIcon />
 
             {/* Status */}
             <div className="flex items-center gap-2 pt-2">
@@ -281,8 +335,32 @@ export default function Contact() {
               </div>
 
               {formState === "error" && (
-                <div className="mb-4 p-3 bg-red-500/10 border border-red-500/25 rounded-lg text-sm text-red-400" role="alert">
-                  Something went wrong. Please try again or email me directly.
+                <div
+                  className="mb-4 p-4 bg-red-500/10 border border-red-500/25 rounded-lg"
+                  role="alert"
+                >
+                  <p className="text-sm text-red-400 mb-1">
+                    That message couldn&apos;t be delivered.
+                  </p>
+                  <p className="text-sm text-[#94A3B8] mb-3">
+                    Nothing you typed is lost — send it by email instead and it will arrive
+                    exactly as written.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <a
+                      href={mailtoFallback(form)}
+                      className="px-4 py-2 bg-[#3776AB] hover:bg-[#4B9CD3] text-white text-sm font-medium rounded-lg transition-colors"
+                    >
+                      Email it instead
+                    </a>
+                    <button
+                      type="button"
+                      onClick={copyEmail}
+                      className="px-4 py-2 border border-[#243044] hover:border-[#3776AB] text-[#94A3B8] hover:text-[#F8FAFC] text-sm font-medium rounded-lg transition-all"
+                    >
+                      {copied ? "Address copied" : `Copy ${CONTACT_EMAIL}`}
+                    </button>
+                  </div>
                 </div>
               )}
 
