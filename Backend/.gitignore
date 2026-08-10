@@ -7,6 +7,10 @@ __pycache__
 
 
 staticfiles
+# User-uploaded/generated content (project covers, gallery images, the site
+# logo) — runtime data, not source. Three synthetic test images had slipped
+# in here before this rule existed; removed in the same commit that adds it.
+media
 desktop.ini
 celerybeat-schedule
 .mypy_cache
