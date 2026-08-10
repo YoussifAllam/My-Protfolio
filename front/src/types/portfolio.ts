@@ -100,7 +100,9 @@ export interface Profile {
   location: string;
   email: string;
   availability: string;
-  cvUrl: string;
+  /** Absolute URL to the uploaded CV PDF, or null if none is set yet
+   *  (DownloadCV falls back to a bundled static file in that case). */
+  cvFile: string | null;
   /** Absolute URL to the uploaded brand mark, or null if none is set yet
    *  (the nav falls back to its built-in "Y" mark SVG in that case). */
   siteLogo: string | null;

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from unfold.admin import ModelAdmin, TabularInline
 
 from .models import (
     Achievement,
@@ -13,9 +14,9 @@ from .models import (
 
 
 @admin.register(Profile)
-class ProfileAdmin(admin.ModelAdmin):
+class ProfileAdmin(ModelAdmin):
     list_display = ["name", "primary_role", "email", "availability"]
-    readonly_fields = ["site_logo_preview"]
+    readonly_fields = ["site_logo_preview", "cv_file_preview"]
 
     def site_logo_preview(self, obj):
         if not obj.site_logo:
@@ -27,8 +28,15 @@ class ProfileAdmin(admin.ModelAdmin):
 
     site_logo_preview.short_description = "Current logo"
 
+    def cv_file_preview(self, obj):
+        if not obj.cv_file:
+            return "No CV uploaded yet — every \"Download CV\" button on the site is a dead link."
+        return format_html('<a href="{}" target="_blank">View current CV ↗</a>', obj.cv_file.url)
 
-class ProjectImageInline(admin.TabularInline):
+    cv_file_preview.short_description = "Current CV"
+
+
+class ProjectImageInline(TabularInline):
     model = ProjectImage
     extra = 1
     fields = ["image", "thumbnail_preview", "caption", "image_type", "order"]
@@ -46,7 +54,7 @@ class ProjectImageInline(admin.TabularInline):
 
 
 @admin.register(Project)
-class ProjectAdmin(admin.ModelAdmin):
+class ProjectAdmin(ModelAdmin):
     list_display = [
         "cover_preview",
         "name",
@@ -126,26 +134,26 @@ class ProjectAdmin(admin.ModelAdmin):
 
 
 @admin.register(ExperienceEntry)
-class ExperienceEntryAdmin(admin.ModelAdmin):
+class ExperienceEntryAdmin(ModelAdmin):
     list_display = ["company", "role", "type", "current", "order"]
     list_filter = ["current", "type"]
     search_fields = ["company", "role", "location"]
 
 
 @admin.register(SkillGroup)
-class SkillGroupAdmin(admin.ModelAdmin):
+class SkillGroupAdmin(ModelAdmin):
     list_display = ["category", "icon", "order"]
     search_fields = ["category"]
 
 
 @admin.register(Achievement)
-class AchievementAdmin(admin.ModelAdmin):
+class AchievementAdmin(ModelAdmin):
     list_display = ["title", "highlight", "color", "order"]
     search_fields = ["title", "description"]
 
 
 @admin.register(ContactMessage)
-class ContactMessageAdmin(admin.ModelAdmin):
+class ContactMessageAdmin(ModelAdmin):
     list_display = ["name", "email", "company", "project_type", "is_read", "created_at"]
     list_filter = ["is_read", "project_type", "created_at"]
     readonly_fields = ["created_at", "updated_at"]

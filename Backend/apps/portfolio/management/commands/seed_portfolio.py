@@ -20,7 +20,7 @@ PROFILE = {
     "location": "Cairo, Egypt",
     "email": "youssifhassan011@gmail.com",
     "availability": "Available for Python and Django opportunities",
-    "cv_url": "",
+    "cv_file": None,  # uploaded through admin, not seeded — see Profile.cv_file
     "tech_stack": [
         "Python",
         "Django",

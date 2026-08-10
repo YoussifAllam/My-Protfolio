@@ -25,6 +25,7 @@ class CamelCaseModelSerializer(serializers.ModelSerializer):
         "image_type": "imageType",
         "primary_role": "primaryRole",
         "site_logo": "siteLogo",
+        "cv_file": "cvFile",
         "tech_stack": "techStack",
         "social_links": "socialLinks",
         "about_sections": "aboutSections",

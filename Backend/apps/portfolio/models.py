@@ -1,5 +1,5 @@
+from django.core.validators import FileExtensionValidator
 from django.db import models
-
 from apps.portfolio.utils.images import build_variant, image_field_changed, variant_name
 
 
@@ -15,6 +15,10 @@ def site_logo_path(instance, filename):
     return f"branding/{filename}"
 
 
+def cv_file_path(instance, filename):
+    return f"documents/{filename}"
+
+
 class Profile(TimestampedModel):
     name = models.CharField(max_length=120)
     primary_role = models.CharField(max_length=160)
@@ -23,7 +27,17 @@ class Profile(TimestampedModel):
     location = models.CharField(max_length=120)
     email = models.EmailField()
     availability = models.CharField(max_length=180)
-    cv_url = models.CharField(max_length=255, blank=True)
+    # Was a CharField holding a URL to wherever the CV happened to be hosted.
+    # An actual upload is simpler to keep current — no separate hosting to
+    # remember — and this is what the "Download CV" button now serves.
+    cv_file = models.FileField(
+        upload_to=cv_file_path,
+        max_length=255,
+        null=True,
+        blank=True,
+        validators=[FileExtensionValidator(["pdf"])],
+        help_text="The PDF served by every \"Download CV\" button on the site.",
+    )
     tech_stack = models.JSONField(default=list, blank=True)
     metrics = models.JSONField(default=list, blank=True)
     social_links = models.JSONField(default=list, blank=True)

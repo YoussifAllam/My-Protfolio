@@ -1,20 +1,21 @@
+import { useApi } from "../hooks/useApi";
+import { getSummary } from "../lib/api";
+
 /**
  * The single source of truth for the Download CV action.
  *
- * Previously this was four separate `href="#download-cv"` anchors. Under
- * `createHashRouter` that sets `location.hash`, which react-router parses as the
- * pathname `download-cv` — matching no route and replacing the page with an
- * error screen. Never use `href="#..."` in this app.
+ * Previously this was four separate `href="#download-cv"` anchors under a
+ * hash router — a "#..." href sets location.hash, which react-router parses
+ * as a pathname and 404s. Never use `href="#..."` in this app.
  *
- * BASE_URL is load-bearing: vite.config.ts derives `base` from FIGMA_PUBLIC_URL,
- * so a hardcoded "/Youssif-Hassan-CV.pdf" 404s on the hosted build.
- *
- * REQUIRED ASSET: front/public/Youssif-Hassan-CV.pdf must exist. Without it the
- * dev server's SPA fallback serves index.html, so the visitor downloads an HTML
- * file with a .pdf extension.
+ * The CV is now `Profile.cv_file`, uploaded through Django admin — see
+ * Backend/apps/portfolio/models.py. There is deliberately no static-file
+ * fallback: one was planned early on but the file was never actually placed
+ * (neither here nor on the server), so falling back to it would just be a
+ * differently-shaped version of the same "button links to nothing" bug.
+ * Until a CV is uploaded, every "Download CV" button renders nothing rather
+ * than a broken link — silence is honest, a 404 isn't.
  */
-const CV_FILE = "Youssif-Hassan-CV.pdf";
-const CV_URL = `${import.meta.env.BASE_URL}${CV_FILE}`;
 
 type Variant = "primary" | "hero" | "outline" | "block";
 
@@ -42,10 +43,17 @@ export default function DownloadCV({
   showIcon?: boolean;
   className?: string;
 }) {
+  // Cached module-wide (see lib/api.ts) — another component on the same page
+  // has usually already triggered this fetch, so this rarely adds a request.
+  const { data: summary } = useApi(getSummary);
+  const cvFile = summary?.profile?.cvFile;
+
+  if (!cvFile) return null;
+
   return (
     <a
-      href={CV_URL}
-      download={CV_FILE}
+      href={cvFile}
+      download="Youssif-Hassan-CV.pdf"
       className={`inline-flex items-center justify-center gap-2 active:scale-[0.98] ${VARIANTS[variant]} ${className}`}
     >
       {showIcon && (
