@@ -22,21 +22,26 @@ DEFAULT_QUALITY = 82
 WEBP_METHOD = 6
 
 
-def build_variant(source_file, *, max_size, quality=DEFAULT_QUALITY):
-    """Return a `ContentFile` holding a resized, WebP-encoded copy of `source_file`.
+def build_variant(source_file, *, max_size, quality=DEFAULT_QUALITY, format="WEBP"):
+    """Return a `ContentFile` holding a resized, re-encoded copy of `source_file`.
 
     `max_size` is `(width, height)`; the image is shrunk to fit inside that box
     with aspect ratio preserved and is never upscaled — `Image.thumbnail()` is a
     no-op if the source is already smaller. EXIF orientation is applied before
     resizing so a camera-rotated screenshot doesn't end up sideways.
+
+    `format` defaults to WebP (smallest at equivalent quality) but PNG is
+    available for small graphics — logos, favicons — where crisp edges and
+    lossless transparency matter more than a few extra KB, and where the
+    consumer (e.g. a `<link rel="icon" type="image/png">` tag) expects PNG.
     """
     source_file.seek(0)
     img = Image.open(source_file)
     img = ImageOps.exif_transpose(img)
 
-    # WebP handles RGB and RGBA directly; anything else (P, LA, CMYK, 1-bit)
-    # gets flattened to whichever of those two keeps or discards transparency
-    # correctly.
+    # Both formats handle RGB and RGBA directly; anything else (P, LA, CMYK,
+    # 1-bit) gets flattened to whichever of those two keeps or discards
+    # transparency correctly.
     if img.mode not in ("RGB", "RGBA"):
         has_alpha = "transparency" in img.info or img.mode in ("P", "LA")
         img = img.convert("RGBA") if has_alpha else img.convert("RGB")
@@ -44,22 +49,25 @@ def build_variant(source_file, *, max_size, quality=DEFAULT_QUALITY):
     img.thumbnail(max_size, Image.LANCZOS)
 
     buffer = BytesIO()
-    img.save(buffer, format="WEBP", quality=quality, method=WEBP_METHOD)
+    if format == "PNG":
+        img.save(buffer, format="PNG", optimize=True)
+    else:
+        img.save(buffer, format="WEBP", quality=quality, method=WEBP_METHOD)
     buffer.seek(0)
     return ContentFile(buffer.read())
 
 
-def variant_name(original_name, suffix):
+def variant_name(original_name, suffix, ext="webp"):
     """`photo.png` + "thumb" -> `photo-3f9a1c2b-thumb.webp`.
 
     The short hash keeps two uploads that happen to share a filename from
     colliding in storage (Django would otherwise silently suffix with `_1`,
-    `_2`, ... on every re-upload of "screenshot.png"). The `.webp` extension
-    reflects what actually gets written, regardless of what was uploaded.
+    `_2`, ... on every re-upload of "screenshot.png"). The extension reflects
+    what actually gets written, regardless of what was uploaded.
     """
     stem = original_name.rsplit("/", 1)[-1].rsplit(".", 1)[0] or "image"
     digest = hashlib.sha1(f"{original_name}:{time.time()}".encode()).hexdigest()[:8]
-    return f"{stem}-{digest}-{suffix}.webp"
+    return f"{stem}-{digest}-{suffix}.{ext}"
 
 
 def image_field_changed(model_cls, pk, field_name, new_file):

@@ -11,6 +11,10 @@ class TimestampedModel(models.Model):
         abstract = True
 
 
+def site_logo_path(instance, filename):
+    return f"branding/{filename}"
+
+
 class Profile(TimestampedModel):
     name = models.CharField(max_length=120)
     primary_role = models.CharField(max_length=160)
@@ -25,12 +29,40 @@ class Profile(TimestampedModel):
     social_links = models.JSONField(default=list, blank=True)
     about_sections = models.JSONField(default=list, blank=True)
 
+    # The public site's brand mark (top-left of the nav). Optional — the
+    # frontend falls back to its built-in "Y" mark SVG when this is unset, so
+    # the site never looks broken before a real logo is uploaded here.
+    site_logo = models.ImageField(
+        upload_to=site_logo_path,
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text="Shown in the site navigation. Resized to at most 256×256 "
+        "and re-encoded to PNG (crisp edges, transparency preserved) on save.",
+    )
+
+    LOGO_SIZE = (256, 256)
+
     class Meta:
         verbose_name = "profile"
         verbose_name_plural = "profile"
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        self._process_site_logo()
+        super().save(*args, **kwargs)
+
+    def _process_site_logo(self):
+        if not image_field_changed(Profile, self.pk, "site_logo", self.site_logo):
+            return
+        if not self.site_logo:
+            return
+        original = self.site_logo
+        original_name = original.name  # see the comment in Project._process_cover_image
+        logo = build_variant(original, max_size=self.LOGO_SIZE, format="PNG")
+        self.site_logo.save(variant_name(original_name, "logo", ext="png"), logo, save=False)
 
 
 def project_cover_path(instance, filename):

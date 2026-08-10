@@ -101,6 +101,9 @@ export interface Profile {
   email: string;
   availability: string;
   cvUrl: string;
+  /** Absolute URL to the uploaded brand mark, or null if none is set yet
+   *  (the nav falls back to its built-in "Y" mark SVG in that case). */
+  siteLogo: string | null;
   techStack: string[];
   metrics: ProfileMetric[];
   socialLinks: SocialLink[];

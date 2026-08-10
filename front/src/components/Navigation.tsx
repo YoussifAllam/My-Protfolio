@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 import DownloadCV from "./DownloadCV";
 import { useDialog } from "../hooks/useDialog";
+import { useApi } from "../hooks/useApi";
+import { getSummary } from "../lib/api";
 
 const LINKS = [
   { to: "/", label: "Home" },
@@ -37,6 +39,10 @@ export default function Navigation() {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  // Cached module-wide (see lib/api.ts) — Footer/Contact/About/etc. already
+  // trigger this fetch, so this rarely causes an extra request.
+  const { data: summary } = useApi(getSummary);
+  const siteLogo = summary?.profile?.siteLogo ?? null;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -76,7 +82,11 @@ export default function Navigation() {
             className="flex items-center gap-2.5 group"
             aria-label="Youssif Hassan — Home"
           >
-            <YMark />
+            {siteLogo ? (
+              <img src={siteLogo} alt="" aria-hidden="true" className="w-6 h-6 rounded object-contain" />
+            ) : (
+              <YMark />
+            )}
             <div className="flex flex-col leading-none">
               <span className="text-[#F8FAFC] font-semibold text-sm tracking-wide group-hover:text-[#4B9CD3] transition-colors">
                 Youssif Hassan

@@ -15,6 +15,17 @@ from .models import (
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ["name", "primary_role", "email", "availability"]
+    readonly_fields = ["site_logo_preview"]
+
+    def site_logo_preview(self, obj):
+        if not obj.site_logo:
+            return "No logo uploaded yet — the site shows its built-in mark instead."
+        return format_html(
+            '<img src="{}" style="height:48px;border-radius:6px;background:#080D18;padding:4px" />',
+            obj.site_logo.url,
+        )
+
+    site_logo_preview.short_description = "Current logo"
 
 
 class ProjectImageInline(admin.TabularInline):
