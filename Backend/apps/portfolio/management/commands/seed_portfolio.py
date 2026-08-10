@@ -1,3 +1,6 @@
+from pathlib import Path
+
+from django.core.files import File
 from django.core.management.base import BaseCommand
 
 from apps.portfolio.models import (
@@ -5,8 +8,80 @@ from apps.portfolio.models import (
     ExperienceEntry,
     Profile,
     Project,
+    ProjectImage,
     SkillGroup,
 )
+
+# Screenshots bundled in the repo (see the directory itself for why: unlike
+# `media/`, this is source, not runtime uploads, so it survives a deploy's
+# rsync and is what `_seed_project_media` below reads from).
+SEED_MEDIA_DIR = Path(__file__).resolve().parent.parent.parent / "seed_media"
+
+# Cover + gallery images for projects seeded above, keyed by slug. Only
+# consulted the first time a project is created — see `_seed_project_media`.
+PROJECT_MEDIA = {
+    "aquacloud-junaidi-water": {
+        "cover": "aquacloud/client-login.png",
+        "gallery": [
+            ("aquacloud/client-login.png", "Customer app — branded login", "mobile"),
+            (
+                "aquacloud/client-home.png",
+                "Customer app — home: next delivery slot & coupon balance",
+                "mobile",
+            ),
+            (
+                "aquacloud/client-orders.png",
+                "Customer app — order history & status",
+                "mobile",
+            ),
+            (
+                "aquacloud/client-cart-coupon-split.png",
+                "Customer app — cart with cash/coupon payment split",
+                "mobile",
+            ),
+            (
+                "aquacloud/client-checkout.png",
+                "Customer app — checkout summary",
+                "mobile",
+            ),
+            (
+                "aquacloud/client-account.png",
+                "Customer app — account & coupon balance",
+                "mobile",
+            ),
+            (
+                "aquacloud/agent-home.jpg",
+                "Agent app — cash box balance & today's delivery round",
+                "mobile",
+            ),
+            (
+                "aquacloud/agent-cashbox.jpg",
+                "Agent app — cash box detail & collections",
+                "mobile",
+            ),
+            (
+                "aquacloud/agent-tour-round.jpg",
+                "Agent app — delivery round with per-stop status",
+                "mobile",
+            ),
+            (
+                "aquacloud/agent-order-detail.jpg",
+                "Agent app — order detail with empty-bottle exchange",
+                "mobile",
+            ),
+            (
+                "aquacloud/agent-door-orders.jpg",
+                "Agent app — door orders (walk-up sales)",
+                "mobile",
+            ),
+            (
+                "aquacloud/agent-door-order-catalog.jpg",
+                "Agent app — door order product catalog",
+                "mobile",
+            ),
+        ],
+    },
+}
 
 PROFILE = {
     "name": "Youssif Hassan",
@@ -186,6 +261,121 @@ PROJECTS = [
         ],
         "metrics": [],
         "links": [],
+    },
+    {
+        "slug": "aquacloud-junaidi-water",
+        "name": "AquaCloud — Al-Junaidi Water",
+        "subtitle": (
+            "Multi-tenant Django platform behind a live water-delivery business: "
+            "customer app, agent app, and admin dashboard"
+        ),
+        "short_description": (
+            "AquaCloud is a multi-tenant coupon-based delivery platform backend: customers "
+            "prepay for coupon codes and spend them on water/product orders, delivery agents "
+            "run daily rounds and collect cash, and admins run the whole business from a "
+            "dashboard. Live in production for Al-Junaidi Water on Google Play and the App Store."
+        ),
+        "full_description": (
+            "AquaCloud is a Django REST Framework backend powering three client surfaces for a "
+            "real water-delivery company: a customer mobile app, a delivery-agent mobile app, "
+            "and an admin dashboard, all sharing one multi-tenant Tenant → Branch → Zone data "
+            "model so the same platform can be white-labeled for other distributors.\n\n"
+            "Customers buy prepaid coupon-code packages and spend them (or cash, or a mix, "
+            "via a per-order payment split) on recurring water and grocery orders, track "
+            "delivery schedules, and manage addresses. Delivery agents run scheduled tours "
+            "assigned by branch, update per-stop order status, handle empty-bottle exchanges, "
+            "take door orders from walk-up customers, and reconcile a running cash-box balance "
+            "at day's end. Admins and branch sub-admins manage products, pricing, coupon "
+            "policy, branches/zones, staff permissions, and reporting for their tenant.\n\n"
+            "Built on Django 5 + DRF with function-based views only, SimpleJWT auth (OTP "
+            "phone login for customers, username/password for staff), Celery for tour "
+            "reminders, Django Channels + Redis for real-time notifications, and a Unfold "
+            "themed admin."
+        ),
+        "categories": ["Backend", "Full Stack", "Multi-Tenant SaaS", "Mobile"],
+        "featured": True,
+        "biggest_project": False,
+        "confidential": False,
+        "company": "ADEX Jordan Company",
+        "year": "2026",
+        "start_date": "2026-04",
+        "end_date": None,
+        "status": "Production",
+        "role": "Python Backend Developer",
+        "project_type": "Commercial SaaS Platform (client + agent apps, admin dashboard)",
+        "cover_image": None,
+        "images": [],
+        "technologies": [
+            "Python",
+            "Django",
+            "Django REST Framework",
+            "PostgreSQL",
+            "SimpleJWT",
+            "Celery",
+            "Redis",
+            "Django Channels",
+            "django-tenants",
+            "Unfold Admin",
+        ],
+        "features": [
+            "Multi-tenant Tenant → Branch → Zone hierarchy, white-labelable per distributor",
+            "Prepaid coupon-code system with mixed cash/coupon payment splits per order",
+            "Customer app: OTP phone login, delivery scheduling, order history, addresses",
+            "Agent app: daily delivery tours, per-stop status, empty-bottle exchange, "
+            "door orders, cash-box reconciliation",
+            "Admin dashboard: products, pricing, branches/zones, staff permissions, reporting",
+            "Role-based access (customer / agent / sub-admin / admin) with per-branch scoping",
+            "Real-time WebSocket notifications over Django Channels + Redis",
+        ],
+        "responsibilities": [
+            "Built the Django REST Framework backend serving all three client apps",
+            "Designed the multi-tenant Tenant/Branch/Zone data model and coupon payment system",
+            "Implemented OTP-based customer auth and staff JWT auth with role/permission scoping",
+            "Built delivery-agent tour, cash-box, and door-order workflows",
+            "Deployed and maintain the platform in production",
+        ],
+        "challenges": [
+            {
+                "title": "One Backend, Three Very Different Clients",
+                "problem": (
+                    "Customers, delivery agents, and admins need very different data and "
+                    "permissions from the same underlying orders/products/tenant data."
+                ),
+                "approach": (
+                    "Centralized role + permission checks in a single access layer "
+                    "(role_required / permission_required / branch_required decorators) "
+                    "instead of duplicating scoping logic per app."
+                ),
+                "solution": (
+                    "Each app's views call shared visibility helpers that scope orders/"
+                    "products/customers by the caller's role and branch membership."
+                ),
+                "result": (
+                    "Three independently deployed apps (customer, agent, admin) stay "
+                    "consistent against one backend and one source of truth."
+                ),
+            }
+        ],
+        "metrics": [],
+        "links": [
+            {
+                "type": "google-play",
+                "label": "Google Play — مياه الجنيدي",
+                "url": (
+                    "https://play.google.com/store/apps/details"
+                    "?id=com.adex.aquacloud.junaidi&hl=ar"
+                ),
+            },
+            {
+                "type": "app-store",
+                "label": "App Store — مياه الجنيدي",
+                "url": (
+                    "https://apps.apple.com/us/app/"
+                    "%D9%85%D9%8A%D8%A7%D9%87-%D8%A7%D9%84%D8%AC%D9%86%D9%8A%D8%AF%D9%8A"
+                    "/id6795517365"
+                ),
+            },
+        ],
     },
     {
         "slug": "baggr-logistics",
@@ -803,10 +993,11 @@ class Command(BaseCommand):
         Profile.objects.update_or_create(id=1, defaults=PROFILE)
 
         for order, project in enumerate(PROJECTS, start=1):
-            Project.objects.update_or_create(
+            obj, _ = Project.objects.update_or_create(
                 slug=project["slug"],
                 defaults={**project, "order": order},
             )
+            self._seed_project_media(obj)
 
         for order, item in enumerate(EXPERIENCE, start=1):
             ExperienceEntry.objects.update_or_create(
@@ -828,3 +1019,32 @@ class Command(BaseCommand):
             )
 
         self.stdout.write(self.style.SUCCESS("Portfolio content seeded."))
+
+    def _seed_project_media(self, project):
+        """Attach the bundled cover + gallery screenshots for `project`, if any
+        are declared in PROJECT_MEDIA — but only the first time: once a cover
+        image or a gallery exists, re-running `seed` never touches it again,
+        so an admin-uploaded replacement is never clobbered on the next deploy.
+        """
+        media = PROJECT_MEDIA.get(project.slug)
+        if not media:
+            return
+
+        if not project.cover_image:
+            cover_path = SEED_MEDIA_DIR / media["cover"]
+            with cover_path.open("rb") as fh:
+                project.cover_image.save(cover_path.name, File(fh), save=True)
+
+        if media["gallery"] and not project.gallery_images.exists():
+            for order, (rel_path, caption, image_type) in enumerate(
+                media["gallery"], start=1
+            ):
+                image_path = SEED_MEDIA_DIR / rel_path
+                gallery_image = ProjectImage(
+                    project=project,
+                    caption=caption,
+                    image_type=image_type,
+                    order=order,
+                )
+                with image_path.open("rb") as fh:
+                    gallery_image.image.save(image_path.name, File(fh), save=True)
