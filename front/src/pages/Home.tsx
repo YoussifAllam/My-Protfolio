@@ -179,7 +179,7 @@ export default function Home() {
             {/* One h1. The name is what a recruiter confirms; the proposition
                 is what they are scanning for, so it carries the display size. */}
             <h1 className="mb-6">
-              <span className="block font-mono text-sm text-[#94A3B8] mb-4">
+              <span className="block font-mono text-lg text-[#94A3B8] mb-4">
                 {profile.name}
                 <span className="text-[#7C8BA3] px-1.5">/</span>
                 <span className="text-[#4B9CD3]">{profile.primaryRole}</span>
