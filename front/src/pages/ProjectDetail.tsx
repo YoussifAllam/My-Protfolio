@@ -103,20 +103,25 @@ export default function ProjectDetail() {
           All Projects
         </Link>
 
-        {/* Cover */}
-        <div className="w-full h-48 sm:h-64 bg-[#0B1120] border border-[#243044] rounded-2xl overflow-hidden mb-8 relative">
+        {/* Cover. No fixed height on the image case: forcing a box shape
+            means either cropping a portrait screenshot (object-cover) or
+            leaving empty bars around it (object-contain in a fixed box).
+            Sizing the box to the image's own intrinsic ratio (h-auto) fills
+            both dimensions with zero cropping and zero empty space — every
+            cover just gets the hero width and whatever height that implies.
+            The generated-signature fallback has no intrinsic size of its
+            own, so it keeps the old fixed height. */}
+        <div className="w-full bg-[#0B1120] border border-[#243044] rounded-2xl overflow-hidden mb-8 relative">
           {project.coverImage ? (
-            // object-contain (not object-cover): several projects' covers
-            // are portrait phone screenshots, which object-cover would crop
-            // down to a sliver in this wide hero box — contain letterboxes
-            // them in full instead. Landscape covers still fill it closely.
             <img
               src={project.coverImage}
               alt={`${project.name} cover`}
-              className="w-full h-full object-contain"
+              className="w-full h-auto max-h-[75vh] object-contain mx-auto"
             />
           ) : (
-            <ProjectSignature project={project} size="detail" decorative={false} />
+            <div className="h-48 sm:h-64">
+              <ProjectSignature project={project} size="detail" decorative={false} />
+            </div>
           )}
           {project.confidential && (
             <div className="absolute top-3 left-3">
