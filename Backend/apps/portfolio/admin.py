@@ -66,7 +66,7 @@ class ProjectAdmin(ModelAdmin):
         "order",
     ]
     list_filter = ["featured", "confidential", "draft", "status"]
-    editable_fields = ["featured", "confidential", "draft", "order"]
+    list_editable = ["featured", "confidential", "draft", "order"]
     prepopulated_fields = {"slug": ["name"]}
     search_fields = ["name", "subtitle", "company", "role"]
     readonly_fields = ["cover_preview_large"]
