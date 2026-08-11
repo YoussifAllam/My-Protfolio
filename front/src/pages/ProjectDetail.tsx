@@ -106,7 +106,15 @@ export default function ProjectDetail() {
         {/* Cover */}
         <div className="w-full h-48 sm:h-64 bg-[#0B1120] border border-[#243044] rounded-2xl overflow-hidden mb-8 relative">
           {project.coverImage ? (
-            <img src={project.coverImage} alt={`${project.name} cover`} className="w-full h-full object-cover" />
+            // object-contain (not object-cover): several projects' covers
+            // are portrait phone screenshots, which object-cover would crop
+            // down to a sliver in this wide hero box — contain letterboxes
+            // them in full instead. Landscape covers still fill it closely.
+            <img
+              src={project.coverImage}
+              alt={`${project.name} cover`}
+              className="w-full h-full object-contain"
+            />
           ) : (
             <ProjectSignature project={project} size="detail" decorative={false} />
           )}
