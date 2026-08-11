@@ -121,11 +121,12 @@ export default function About() {
         </h2>
         <div className="bg-[#0B1120] border border-[#243044] rounded-xl p-6">
           <p className="text-sm text-[#7C8BA3] font-mono mb-5">// remote delivery for clients and products across</p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {[
               { country: "Jordan", detail: "ADEX — Current employer", home: false },
               { country: "Qatar", detail: "Prezza — E-commerce platform", home: false },
               { country: "Saudi Arabia", detail: "Emily's Luxury · Moussa Academy", home: false },
+              { country: "USA", detail: "Agave World", home: false },
               { country: "Egypt", detail: "Home base — Cairo", home: true },
             ].map(({ country, detail, home }) => (
               <div
