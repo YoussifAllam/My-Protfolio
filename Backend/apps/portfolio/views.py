@@ -30,7 +30,7 @@ class ProjectListAPIView(generics.ListAPIView):
         # Draft entries stay in the DB (real work in progress) but never reach
         # a visitor — an incomplete "Add Project Details" card is worse than
         # not being listed at all.
-        queryset = Project.objects.filter(draft=False)
+        queryset = Project.objects.filter(draft=False).order_by("order")
         featured = self.request.query_params.get("featured")
         search = self.request.query_params.get("search")
 
