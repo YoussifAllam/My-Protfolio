@@ -1,0 +1,37 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+  &rsaquo; <a href="{% url 'admin:portfolio_project_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; <a href="{% url 'admin:portfolio_project_change' project.pk %}">{{ project.name }}</a>
+  &rsaquo; {% trans 'Bulk upload gallery images' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <p>
+    Pick any number of image files below — each one becomes its own gallery entry for
+    <strong>{{ project.name }}</strong>, in the order you select them. They go through the same
+    resize/WebP pipeline as a normal single upload. Captions are left blank; add those afterward
+    on the project's edit page if you want them.
+  </p>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <fieldset class="module aligned">
+      <div class="form-row">
+        <label for="id_images">Images</label>
+        <input type="file" name="images" id="id_images" multiple accept="image/*" required>
+      </div>
+    </fieldset>
+    <div class="submit-row">
+      <input type="submit" value="Upload" class="default">
+      <a href="{% url 'admin:portfolio_project_change' project.pk %}" class="button cancel-link">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

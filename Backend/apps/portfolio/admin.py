@@ -1,4 +1,8 @@
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.db.models import Max
+from django.shortcuts import get_object_or_404, redirect
+from django.template.response import TemplateResponse
+from django.urls import path, reverse
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
 
@@ -69,11 +73,12 @@ class ProjectAdmin(ModelAdmin):
     list_editable = ["featured", "confidential", "draft", "order"]
     prepopulated_fields = {"slug": ["name"]}
     search_fields = ["name", "subtitle", "company", "role"]
-    readonly_fields = ["cover_preview_large"]
+    readonly_fields = ["cover_preview_large", "bulk_upload_link"]
     inlines = [ProjectImageInline]
     fieldsets = (
         (None, {"fields": ["slug", "name", "subtitle", "draft", "order"]}),
         ("Cover image", {"fields": ["cover_image", "cover_preview_large"]}),
+        ("Gallery", {"fields": ["bulk_upload_link"]}),
         (
             "Content",
             {
@@ -132,6 +137,71 @@ class ProjectAdmin(ModelAdmin):
         )
 
     cover_preview_large.short_description = "Current cover"
+
+    def bulk_upload_link(self, obj):
+        if not obj.pk:
+            return "Save the project first, then come back here to bulk-upload gallery images."
+        url = reverse("admin:portfolio_project_bulk_upload_images", args=[obj.pk])
+        return format_html(
+            '<a class="button" href="{}">Bulk upload gallery images ↗</a> '
+            '<span style="color:#888;font-size:12px">'
+            "Pick several files at once instead of adding gallery rows one by one below."
+            "</span>",
+            url,
+        )
+
+    bulk_upload_link.short_description = "Gallery bulk upload"
+
+    def get_urls(self):
+        # Extra admin-only URL for the multi-file upload form below — kept as
+        # a plain view (not a ModelAdmin action) since actions operate on
+        # already-selected rows, not on file input, and this needs to accept
+        # a project id plus a multipart POST.
+        custom_urls = [
+            path(
+                "<int:project_id>/bulk-upload-images/",
+                self.admin_site.admin_view(self.bulk_upload_images_view),
+                name="portfolio_project_bulk_upload_images",
+            ),
+        ]
+        return custom_urls + super().get_urls()
+
+    def bulk_upload_images_view(self, request, project_id):
+        project = get_object_or_404(Project, pk=project_id)
+
+        if request.method == "POST":
+            files = request.FILES.getlist("images")
+            if not files:
+                messages.error(request, "No files were selected.")
+            else:
+                # New uploads go after whatever's already in the gallery,
+                # in the order the files were picked — not 1, 2, 3..., which
+                # would collide with (and silently reshuffle) existing rows.
+                next_order = (
+                    project.gallery_images.aggregate(Max("order"))["order__max"] or 0
+                ) + 1
+                for offset, uploaded_file in enumerate(files):
+                    ProjectImage.objects.create(
+                        project=project, image=uploaded_file, order=next_order + offset
+                    )
+                messages.success(
+                    request,
+                    f"Uploaded {len(files)} image(s) to '{project.name}'. "
+                    "Add captions on the project's edit page if you want them.",
+                )
+            return redirect(
+                reverse("admin:portfolio_project_change", args=[project.pk])
+            )
+
+        context = {
+            **self.admin_site.each_context(request),
+            "opts": self.model._meta,
+            "project": project,
+            "title": f"Bulk upload gallery images — {project.name}",
+        }
+        return TemplateResponse(
+            request, "admin/portfolio/project/bulk_upload_images.html", context
+        )
 
 
 @admin.register(ExperienceEntry)
