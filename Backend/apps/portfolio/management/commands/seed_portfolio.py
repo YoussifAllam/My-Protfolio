@@ -85,7 +85,11 @@ PROJECT_MEDIA = {
         "cover": "tanjour/client-home.jpg",
         "gallery": [
             ("tanjour/client-home.jpg", "Customer app — home & daily picks", "mobile"),
-            ("tanjour/client-menu.jpg", "Customer app — menu with categories", "mobile"),
+            (
+                "tanjour/client-menu.jpg",
+                "Customer app — menu with categories",
+                "mobile",
+            ),
             (
                 "tanjour/client-subscriptions.jpg",
                 "Customer app — meal subscription packages",
@@ -439,7 +443,7 @@ PROJECTS = [
                 "type": "google-play",
                 "label": "Google Play — المندوب مياه الجنيدي",
                 "url": (
-                    "https://play.google.com/store/apps/details?id=com.adex.aquacloud.junaidi.driver"
+                    "https://play.google.com/store/apps/details?=com.adex.aquacloud.junaidi.driver"
                 ),
             },
             {
