@@ -103,25 +103,21 @@ export default function ProjectDetail() {
           All Projects
         </Link>
 
-        {/* Cover. No fixed height on the image case: forcing a box shape
-            means either cropping a portrait screenshot (object-cover) or
-            leaving empty bars around it (object-contain in a fixed box).
-            Sizing the box to the image's own intrinsic ratio (h-auto) fills
-            both dimensions with zero cropping and zero empty space — every
-            cover just gets the hero width and whatever height that implies.
-            The generated-signature fallback has no intrinsic size of its
-            own, so it keeps the old fixed height. */}
-        <div className="w-full bg-[#0B1120] border border-[#243044] rounded-2xl overflow-hidden mb-8 relative">
+        {/* Cover. Every cover_image is padded server-side onto a fixed 16:9
+            canvas on upload (Project._process_cover_image /
+            build_canvas_variant), so a plain aspect-video box + object-cover
+            here never crops real content — at most it eats into the padding
+            a portrait screenshot got centered on. No per-aspect-ratio CSS
+            needed on this end anymore. */}
+        <div className="w-full aspect-video bg-[#0B1120] border border-[#243044] rounded-2xl overflow-hidden mb-8 relative">
           {project.coverImage ? (
             <img
               src={project.coverImage}
               alt={`${project.name} cover`}
-              className="w-full h-auto max-h-[75vh] object-contain mx-auto"
+              className="w-full h-full object-cover"
             />
           ) : (
-            <div className="h-48 sm:h-64">
-              <ProjectSignature project={project} size="detail" decorative={false} />
-            </div>
+            <ProjectSignature project={project} size="detail" decorative={false} />
           )}
           {project.confidential && (
             <div className="absolute top-3 left-3">

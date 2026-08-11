@@ -1,6 +1,11 @@
 from django.core.validators import FileExtensionValidator
 from django.db import models
-from apps.portfolio.utils.images import build_variant, image_field_changed, variant_name
+from apps.portfolio.utils.images import (
+    build_canvas_variant,
+    build_variant,
+    image_field_changed,
+    variant_name,
+)
 
 
 class TimestampedModel(models.Model):
@@ -174,11 +179,17 @@ class Project(TimestampedModel):
         # `variant_name(original.name, ...)` call would then be building off
         # the already-renamed "...-cover.webp" instead of the real original.
         original_name = original.name
-        full = build_variant(
-            original, max_size=self.COVER_FULL_SIZE, quality=self.COVER_FULL_QUALITY
+        # build_canvas_variant (not build_variant): a cover renders in one
+        # fixed-shape hero/card box across every project regardless of what
+        # aspect ratio the uploaded screenshot happens to be — padding it
+        # onto a canvas of that exact shape here means the template can just
+        # fill the box, instead of every consumer having to pick its own
+        # crop-vs-letterbox tradeoff per image.
+        full = build_canvas_variant(
+            original, canvas_size=self.COVER_FULL_SIZE, quality=self.COVER_FULL_QUALITY
         )
-        thumb = build_variant(
-            original, max_size=self.COVER_THUMB_SIZE, quality=self.COVER_THUMB_QUALITY
+        thumb = build_canvas_variant(
+            original, canvas_size=self.COVER_THUMB_SIZE, quality=self.COVER_THUMB_QUALITY
         )
         self.cover_image.save(variant_name(original_name, "cover"), full, save=False)
         self.cover_thumbnail.save(

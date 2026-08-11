@@ -57,6 +57,49 @@ def build_variant(source_file, *, max_size, quality=DEFAULT_QUALITY, format="WEB
     return ContentFile(buffer.read())
 
 
+def build_canvas_variant(
+    source_file, *, canvas_size, quality=DEFAULT_QUALITY, format="WEBP", background=(11, 17, 32)
+):
+    """Like `build_variant`, but the result is always exactly `canvas_size`.
+
+    `build_variant` shrinks to fit inside a box and stops there, so its output
+    dimensions vary with the source's own aspect ratio — a portrait phone
+    screenshot and a landscape dashboard shot come out different shapes. For
+    a hero/cover slot rendered at one fixed box in the UI, that pushes the
+    "how do I not crop this" problem onto the frontend for every aspect ratio
+    it might ever receive.
+
+    Here, the source is scaled to fit inside `canvas_size` (preserving aspect,
+    never upscaled — same as `build_variant`) and then centered on a solid
+    canvas of that exact size. Every cover this touches comes out identically
+    shaped and fully visible, so the template that renders it can just fill
+    its box (`object-cover` or plain 100%/100%) with no per-image cropping or
+    letterboxing logic needed. `background` defaults to the site's dark panel
+    color (`#0B1120`) so the padding is invisible against the page chrome.
+    """
+    source_file.seek(0)
+    img = Image.open(source_file)
+    img = ImageOps.exif_transpose(img)
+
+    if img.mode not in ("RGB", "RGBA"):
+        has_alpha = "transparency" in img.info or img.mode in ("P", "LA")
+        img = img.convert("RGBA") if has_alpha else img.convert("RGB")
+
+    img.thumbnail(canvas_size, Image.LANCZOS)
+
+    canvas = Image.new("RGB", canvas_size, background)
+    offset = ((canvas_size[0] - img.width) // 2, (canvas_size[1] - img.height) // 2)
+    canvas.paste(img, offset, img if img.mode == "RGBA" else None)
+
+    buffer = BytesIO()
+    if format == "PNG":
+        canvas.save(buffer, format="PNG", optimize=True)
+    else:
+        canvas.save(buffer, format="WEBP", quality=quality, method=WEBP_METHOD)
+    buffer.seek(0)
+    return ContentFile(buffer.read())
+
+
 def variant_name(original_name, suffix, ext="webp"):
     """`photo.png` + "thumb" -> `photo-3f9a1c2b-thumb.webp`.
 
