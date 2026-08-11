@@ -95,7 +95,10 @@ PROFILE = {
     "location": "Cairo, Egypt",
     "email": "youssifhassan011@gmail.com",
     "availability": "Available for Python and Django opportunities",
-    "cv_file": None,  # uploaded through admin, not seeded — see Profile.cv_file
+    # cv_file is deliberately absent: it's uploaded through admin, not seeded
+    # (see Profile.cv_file) — including it here as None would null out
+    # whatever was uploaded on every reseed, exactly like the cover_image
+    # bug fixed below for Project.
     "tech_stack": [
         "Python",
         "Django",
@@ -360,7 +363,7 @@ PROJECTS = [
         "links": [
             {
                 "type": "google-play",
-                "label": "Google Play — مياه الجنيدي",
+                "label": "Google Play — العميل مياه الجنيدي",
                 "url": (
                     "https://play.google.com/store/apps/details"
                     "?id=com.adex.aquacloud.junaidi&hl=ar"
@@ -368,12 +371,24 @@ PROJECTS = [
             },
             {
                 "type": "app-store",
-                "label": "App Store — مياه الجنيدي",
+                "label": "App Store — العميل مياه الجنيدي",
                 "url": (
                     "https://apps.apple.com/us/app/"
                     "%D9%85%D9%8A%D8%A7%D9%87-%D8%A7%D9%84%D8%AC%D9%86%D9%8A%D8%AF%D9%8A"
                     "/id6795517365"
                 ),
+            },
+            {
+                "type": "google-play",
+                "label": "Google Play — المندوب مياه الجنيدي",
+                "url": (
+                    "https://play.google.com/store/apps/details?id=com.adex.aquacloud.junaidi.driver"
+                ),
+            },
+            {
+                "type": "app-store",
+                "label": "App Store — المندوب مياه الجنيدي",
+                "url": ("https://apps.apple.com/us/app/6796311081"),
             },
         ],
     },
@@ -993,9 +1008,15 @@ class Command(BaseCommand):
         Profile.objects.update_or_create(id=1, defaults=PROFILE)
 
         for order, project in enumerate(PROJECTS, start=1):
+            # cover_image is deliberately excluded from defaults: it's an
+            # uploaded file, and blindly including "cover_image": None here
+            # would null out (delete the reference to) whatever was uploaded
+            # through admin on every reseed. _seed_project_media below is the
+            # only thing allowed to set it, and only when it's still empty.
+            defaults = {k: v for k, v in project.items() if k != "cover_image"}
+            defaults["order"] = order
             obj, _ = Project.objects.update_or_create(
-                slug=project["slug"],
-                defaults={**project, "order": order},
+                slug=project["slug"], defaults=defaults
             )
             self._seed_project_media(obj)
 
