@@ -127,7 +127,7 @@ jobs:
             -e "ssh -i ~/.ssh/deploy_key" \
             front/dist/ portfolio@64.227.16.189:/srv/portfolio/app/frontend/dist/
 
-      - name: Migrate + seed + collectstatic
+      - name: Migrate + collectstatic
         run: |
           ssh -i ~/.ssh/deploy_key portfolio@64.227.16.189 '
             set -e
@@ -135,15 +135,12 @@ jobs:
             export ENVIRONMENT=Production
             export DJANGO_SETTINGS_MODULE=config.django
             /srv/portfolio/venv/bin/python manage.py migrate --noinput
-            /srv/portfolio/venv/bin/python manage.py seed_portfolio
             /srv/portfolio/venv/bin/python manage.py collectstatic --noinput
           '
-        # seed_portfolio is update_or_create-based (Profile/Project/Experience/
-        # Skills/Achievements keyed by stable fields) and only attaches a
-        # project's cover/gallery images the first time it has none — so
-        # running it on every deploy keeps prod's text content in sync with
-        # this file without ever deleting rows or clobbering an admin-uploaded
-        # image with the bundled seed one.
+        # No seed step: seed_portfolio was removed (860d6a2) once all
+        # Profile/Project/Experience/Skills/Achievements content moved to
+        # being managed directly through the admin — prod data no longer has
+        # a file counterpart to sync from on every deploy.
         # Deliberately does NOT run `pip install` here: the deploy key only
         # has narrow sudo (restart/status of one service, see
         # /etc/sudoers.d/portfolio-deploy), and the venv is root-owned by
