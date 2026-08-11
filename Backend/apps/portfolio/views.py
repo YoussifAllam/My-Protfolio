@@ -31,11 +31,11 @@ class ProjectListAPIView(generics.ListAPIView):
         # a visitor — an incomplete "Add Project Details" card is worse than
         # not being listed at all.
         queryset = Project.objects.filter(draft=False).order_by("order")
-        featured = self.request.query_params.get("featured")
+        # featured = self.request.query_params.get("featured")
         search = self.request.query_params.get("search")
 
-        if featured in {"1", "true", "True"}:
-            queryset = queryset.filter(featured=True)
+        # if featured in {"1", "true", "True"}:
+        #     queryset = queryset.filter(featured=True)
         if search:
             queryset = queryset.filter(name__icontains=search)
 
