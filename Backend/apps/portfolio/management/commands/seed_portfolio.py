@@ -81,6 +81,63 @@ PROJECT_MEDIA = {
             ),
         ],
     },
+    "tanjour-food-delivery": {
+        "cover": "tanjour/client-home.jpg",
+        "gallery": [
+            ("tanjour/client-home.jpg", "Customer app — home & daily picks", "mobile"),
+            ("tanjour/client-menu.jpg", "Customer app — menu with categories", "mobile"),
+            (
+                "tanjour/client-subscriptions.jpg",
+                "Customer app — meal subscription packages",
+                "mobile",
+            ),
+            (
+                "tanjour/dashboard-overview.png",
+                "Admin dashboard — overview (orders, revenue, active subscriptions)",
+                "dashboard",
+            ),
+            (
+                "tanjour/dashboard-orders.png",
+                "Admin dashboard — orders management",
+                "dashboard",
+            ),
+            (
+                "tanjour/dashboard-subscription-packages.png",
+                "Admin dashboard — subscription packages",
+                "dashboard",
+            ),
+            (
+                "tanjour/dashboard-foods.png",
+                "Admin dashboard — menu/foods management",
+                "dashboard",
+            ),
+            (
+                "tanjour/dashboard-categories.png",
+                "Admin dashboard — menu categories",
+                "dashboard",
+            ),
+            (
+                "tanjour/dashboard-customers.png",
+                "Admin dashboard — customers management",
+                "dashboard",
+            ),
+            (
+                "tanjour/dashboard-delivery-zones.png",
+                "Admin dashboard — cities, delivery zones & pricing",
+                "dashboard",
+            ),
+            (
+                "tanjour/dashboard-coupons.png",
+                "Admin dashboard — coupons & promotions",
+                "dashboard",
+            ),
+            (
+                "tanjour/dashboard-users-permissions.png",
+                "Admin dashboard — staff users & role permissions",
+                "dashboard",
+            ),
+        ],
+    },
 }
 
 PROFILE = {
@@ -389,6 +446,122 @@ PROJECTS = [
                 "type": "app-store",
                 "label": "App Store — المندوب مياه الجنيدي",
                 "url": ("https://apps.apple.com/us/app/6796311081"),
+            },
+        ],
+    },
+    {
+        "slug": "tanjour-food-delivery",
+        "name": "Tanjour — طنجور",
+        "subtitle": (
+            "Multi-tenant food-delivery platform with meal subscriptions: "
+            "customer app and admin dashboard"
+        ),
+        "short_description": (
+            "Tanjour is a multi-tenant Django food-delivery backend: customers browse a "
+            "restaurant's menu, order, and subscribe to recurring meal packages, while "
+            "staff run the whole business — menu, pricing, delivery zones, promotions, "
+            "and subscriptions — from a web dashboard. Live in production on Google Play "
+            "and the App Store."
+        ),
+        "full_description": (
+            "Tanjour is a Django REST Framework backend serving a customer mobile app "
+            "and a staff/admin web dashboard on a schema-per-tenant multi-tenant "
+            "architecture (django-tenants) — each restaurant brand gets its own isolated "
+            "Postgres schema on the same platform, routed by subdomain.\n\n"
+            "Customers browse a categorized food menu with images and pricing, build a "
+            "cart, check out with zone-based delivery fees, apply coupons/automatic "
+            "discounts, and subscribe to recurring meal packages (N meals over N days "
+            "with a daily redemption limit) instead of paying per order. Staff manage "
+            "the full catalog (foods, categories, add-ons), cities/zones/delivery "
+            "pricing, coupons and time-based/automatic promotions, subscription "
+            "packages, order and subscription cancellations, customers, and "
+            "role-scoped staff accounts (admin / sub-admin / agent) from a dashboard.\n\n"
+            "Built on Django 5 + DRF with cookie-based JWT auth (HttpOnly access/refresh "
+            "cookies, not bearer headers), Django Channels + Redis for real-time "
+            "notifications, Celery for background jobs, S3-compatible object storage "
+            "(DigitalOcean Spaces) for media, and UUIDv7 primary keys with soft delete "
+            "on every model."
+        ),
+        "categories": ["Backend", "Full Stack", "Multi-Tenant SaaS", "Mobile"],
+        "featured": True,
+        "biggest_project": False,
+        "confidential": False,
+        "company": "ADEX Jordan Company",
+        "year": "2026",
+        "start_date": "2026-07",
+        "end_date": None,
+        "status": "Production",
+        "role": "Python Backend Developer",
+        "project_type": "Commercial SaaS Platform (client app + admin dashboard)",
+        "images": [],
+        "technologies": [
+            "Python",
+            "Django",
+            "Django REST Framework",
+            "PostgreSQL",
+            "django-tenants",
+            "SimpleJWT",
+            "Celery",
+            "Redis",
+            "Django Channels",
+            "AWS S3 / DigitalOcean Spaces",
+        ],
+        "features": [
+            "Schema-per-tenant multi-tenancy (django-tenants), one platform per brand",
+            "Menu catalog: categories, foods, add-ons, per-item pricing & discounts",
+            "Cart, checkout, and zone-based delivery-fee calculation",
+            "Recurring meal subscription packages with daily redemption limits",
+            "Coupons, automatic discounts, and time-based promotions",
+            "Staff dashboard: orders, subscriptions, customers, cancellations, zones/pricing",
+            "Role-based staff accounts (admin / sub-admin / agent) with granular permissions",
+            "Cookie-based JWT auth with CSRF protection; real-time notifications over Channels",
+        ],
+        "responsibilities": [
+            "Built the Django REST Framework backend serving the customer app and dashboard",
+            "Designed the schema-per-tenant multi-tenancy model and per-tenant routing",
+            "Implemented the meal-subscription system (packages, redemption, cancellation)",
+            "Built delivery-zone pricing, coupons, and promotions",
+            "Implemented cookie-based JWT auth with CSRF protection",
+            "Deployed and maintain the platform in production",
+        ],
+        "challenges": [
+            {
+                "title": "One Platform, Isolated Per Brand",
+                "problem": (
+                    "Multiple restaurant brands need to run on the same platform without "
+                    "ever seeing each other's menus, orders, or customers."
+                ),
+                "approach": (
+                    "Adopted schema-per-tenant isolation (django-tenants) instead of a "
+                    "shared-schema + tenant-FK approach — separation enforced by "
+                    "Postgres itself, not application-level filtering."
+                ),
+                "solution": (
+                    "Each brand's request is routed by subdomain to its own schema; "
+                    "tenant-scoped apps (identity, orders, menu) exist once per schema, "
+                    "shared apps (billing, platform admin) live in `public`."
+                ),
+                "result": (
+                    "A new brand launches on an isolated schema with zero cross-tenant "
+                    "query risk, and the same phone number can hold independent accounts "
+                    "on different brands."
+                ),
+            }
+        ],
+        "metrics": [],
+        "links": [
+            {
+                "type": "google-play",
+                "label": "Google Play — طنجور",
+                "url": "https://play.google.com/store/apps/details?id=com.adex.tanjourfood",
+            },
+            {
+                "type": "app-store",
+                "label": "App Store — طنجور",
+                "url": (
+                    "https://apps.apple.com/us/app/"
+                    "%D8%B7%D9%86%D8%AC%D9%88%D8%B1-tanjoor/id6785086122"
+                ),
             },
         ],
     },
