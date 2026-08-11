@@ -280,7 +280,12 @@ export default function ProjectDetail() {
                 <img
                   src={img.thumb}
                   alt={img.caption}
-                  className="w-full aspect-video object-cover rounded-lg border border-[#243044] hover:border-[#3776AB]/50 transition-colors"
+                  // object-contain (not object-cover): a portrait phone
+                  // screenshot cropped to this 16:9 box would lose most of
+                  // its content, so the image is letterboxed on the fill
+                  // color instead — landscape shots still fill the box edge
+                  // to edge since they're already close to 16:9.
+                  className="w-full aspect-video object-contain bg-[#0B1120] rounded-lg border border-[#243044] hover:border-[#3776AB]/50 transition-colors"
                   loading="lazy"
                 />
               </button>
