@@ -4,6 +4,8 @@ interface StatusBadgeProps {
 
 function getStatusStyle(status: string): { dot: string; badge: string } {
   const s = status.toLowerCase();
+  if (s.includes("paused") || s.includes("stopped"))
+    return { dot: "bg-[#EF4444]", badge: "bg-[#EF4444]/10 text-[#F87171] border-[#EF4444]/25" };
   if (s.includes("production") || s.includes("active"))
     return { dot: "bg-[#22C55E]", badge: "bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/25" };
   if (s.includes("development") || s.includes("progress"))
