@@ -6,18 +6,6 @@ import { useApi } from "../hooks/useApi";
 import { getProjects } from "../lib/api";
 import type { Project } from "../types/portfolio";
 
-type SortKey = "featured" | "newest" | "oldest" | "alpha";
-
-/** Undated projects sort to the end under both date orders, never to the top. */
-const dateKey = (p: Project, whenMissing: string) => p.startDate || whenMissing;
-
-const SORTERS: Record<SortKey, (a: Project, b: Project) => number> = {
-  featured: (a, b) => Number(b.featured) - Number(a.featured) || a.name.localeCompare(b.name),
-  newest: (a, b) => dateKey(b, "0000-00").localeCompare(dateKey(a, "0000-00")),
-  oldest: (a, b) => dateKey(a, "9999-99").localeCompare(dateKey(b, "9999-99")),
-  alpha: (a, b) => a.name.localeCompare(b.name),
-};
-
 /** Preferred display order for categories that exist in the fetched data.
  * Anything not listed here still appears, just after these, alphabetically. */
 const CATEGORY_ORDER = ["Backend", "Full Stack", "AI", "Desktop Apps", "DevOps"];
@@ -32,7 +20,6 @@ function deriveCategories(projects: Project[]): string[] {
 export default function Projects() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState<SortKey>("featured");
   const gridRef = useReveal<HTMLDivElement>({ group: true });
 
   const { data: projects, loading, error, retry } = useApi(getProjects);
@@ -40,7 +27,7 @@ export default function Projects() {
   const categories = useMemo(() => deriveCategories(projects ?? []), [projects]);
 
   const filtered = useMemo(() => {
-    const list = (projects ?? []).filter((p) => {
+    return (projects ?? []).filter((p) => {
       const matchCat = activeCategory === "All" || p.categories.includes(activeCategory);
       const q = search.toLowerCase();
       const matchSearch =
@@ -52,9 +39,7 @@ export default function Projects() {
         p.role.toLowerCase().includes(q);
       return matchCat && matchSearch;
     });
-
-    return list.sort(SORTERS[sort]);
-  }, [projects, activeCategory, search, sort]);
+  }, [projects, activeCategory, search]);
 
   const categoryCounts = useMemo(() => {
     const list = projects ?? [];
@@ -84,8 +69,8 @@ export default function Projects() {
 
       {!loading && !error && (
         <>
-          {/* Filters + Search */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-8">
+          {/* Filters */}
+          <div className="mb-8">
             <div
               className="flex items-center gap-2 overflow-x-auto pb-1 flex-1"
               role="group"
@@ -111,18 +96,6 @@ export default function Projects() {
                 </button>
               ))}
             </div>
-
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as SortKey)}
-              className="bg-[#111827] border border-[#243044] text-[#94A3B8] text-sm rounded-lg px-3 py-2 focus:border-[#3776AB] appearance-none min-w-[140px]"
-              aria-label="Sort projects"
-            >
-              <option value="featured">Featured</option>
-              <option value="newest">Newest</option>
-              <option value="oldest">Oldest</option>
-              <option value="alpha">Alphabetical</option>
-            </select>
           </div>
 
           {/* Search */}

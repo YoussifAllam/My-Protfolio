@@ -69,7 +69,10 @@ class ProjectSerializer(CamelCaseModelSerializer):
 
     class Meta:
         model = Project
-        exclude = ["created_at", "updated_at", "order"]
+        exclude = [
+            "created_at",
+            "updated_at",
+        ]
 
 
 class ExperienceEntrySerializer(CamelCaseModelSerializer):
