@@ -7,6 +7,7 @@ app_name = "portfolio"
 urlpatterns = [
     path("summary/", views.summary, name="summary"),
     path("projects/", views.ProjectListAPIView.as_view(), name="project-list"),
+    path("manage/projects/", views.upsert_project, name="project-upsert"),
     path(
         "projects/<slug:slug>/",
         views.ProjectDetailAPIView.as_view(),

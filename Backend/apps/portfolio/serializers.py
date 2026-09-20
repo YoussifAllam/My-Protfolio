@@ -75,6 +75,21 @@ class ProjectSerializer(CamelCaseModelSerializer):
         ]
 
 
+class ProjectWriteSerializer(CamelCaseModelSerializer):
+    """Write counterpart to ProjectSerializer, for the manage endpoint.
+
+    The cover fields are excluded on purpose rather than just left out of
+    payloads: they're set only by uploading a file named `cover`, and a
+    payload that happened to carry `coverImage: null` (e.g. copy-pasted back
+    from a GET response) would otherwise wipe the uploaded cover — which is
+    exactly how the old seeding pipeline destroyed covers once already.
+    """
+
+    class Meta:
+        model = Project
+        exclude = ["created_at", "updated_at", "cover_image", "cover_thumbnail"]
+
+
 class ExperienceEntrySerializer(CamelCaseModelSerializer):
     class Meta:
         model = ExperienceEntry

@@ -1,6 +1,17 @@
+import json
+from pathlib import Path
+
+from django.db.models import Max
 from rest_framework import generics, status
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.decorators import (
+    api_view,
+    authentication_classes,
+    parser_classes,
+    permission_classes,
+)
+from rest_framework.parsers import MultiPartParser
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 
 from .models import (
@@ -9,6 +20,7 @@ from .models import (
     ExperienceEntry,
     Profile,
     Project,
+    ProjectImage,
     SkillGroup,
 )
 from .serializers import (
@@ -17,6 +29,7 @@ from .serializers import (
     ExperienceEntrySerializer,
     ProfileSerializer,
     ProjectSerializer,
+    ProjectWriteSerializer,
     SkillGroupSerializer,
 )
 
@@ -58,6 +71,67 @@ class ProjectDetailAPIView(generics.RetrieveAPIView):
     serializer_class = ProjectSerializer
     permission_classes = [AllowAny]
     lookup_field = "slug"
+
+
+@api_view(["POST"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAdminUser])
+@parser_classes([MultiPartParser])
+def upsert_project(request):
+    """Create or update a project, with its images, in one multipart POST.
+
+    Form fields:
+      payload  JSON object of project fields (camelCase or snake_case), plus
+               two optional keys consumed here rather than stored:
+               `captions` {filename: caption} and `replaceImages` (bool).
+      images   Zero or more files. The one whose name is `cover.<ext>` becomes
+               the cover; the rest become gallery entries, ordered by filename
+               (so `01-...`, `02-...` land in order no matter what order the
+               HTTP client happened to send them in).
+
+    Matching is by `slug`: posting the same slug again updates that project
+    and appends any new gallery images, unless `replaceImages` is set.
+    """
+    try:
+        payload = json.loads(request.data.get("payload", ""))
+    except json.JSONDecodeError:
+        return Response(
+            {"payload": "Required: a JSON object as a string."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    captions = payload.pop("captions", {})
+    replace_images = payload.pop("replaceImages", False)
+
+    project = Project.objects.filter(slug=payload.get("slug")).first()
+    serializer = ProjectWriteSerializer(project, data=payload)
+    serializer.is_valid(raise_exception=True)
+    created = project is None
+    project = serializer.save()
+
+    uploads = sorted(request.FILES.getlist("images"), key=lambda f: f.name)
+    cover = next((f for f in uploads if Path(f.name).stem == "cover"), None)
+    if cover:
+        project.cover_image = cover
+        project.save()  # runs the resize/pad/WebP pipeline in Project.save()
+
+    if replace_images:
+        project.gallery_images.all().delete()
+    next_order = (
+        project.gallery_images.aggregate(Max("order"))["order__max"] or 0
+    ) + 1
+    for offset, uploaded in enumerate(f for f in uploads if f is not cover):
+        ProjectImage.objects.create(
+            project=project,
+            image=uploaded,
+            caption=captions.get(uploaded.name, ""),
+            order=next_order + offset,
+        )
+
+    return Response(
+        ProjectSerializer(project, context={"request": request}).data,
+        status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
+    )
 
 
 class ExperienceListAPIView(generics.ListAPIView):
