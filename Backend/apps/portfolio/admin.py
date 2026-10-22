@@ -1,10 +1,17 @@
+import json
+import tempfile
+import zipfile
+from pathlib import Path
+
 from django.contrib import admin, messages
 from django.db.models import Max
+from django.http import FileResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
+from unfold.decorators import action
 
 from .models import (
     Achievement,
@@ -15,6 +22,47 @@ from .models import (
     ProjectImage,
     SkillGroup,
 )
+from .serializers import ProjectWriteSerializer
+
+
+def write_project_folder(zf, project):
+    """Add `<slug>/` to the zip: the cover, the gallery images, and project.json.
+
+    project.json is the manage-endpoint payload (captions included), so a
+    downloaded folder can be pushed back as-is: cover.* becomes the cover and
+    the numbered files the gallery, in the same order.
+    """
+    files = []
+    if project.cover_image:
+        files.append((f"cover{Path(project.cover_image.name).suffix}", project.cover_image))
+    captions = {}
+    for number, image in enumerate(project.gallery_images.order_by("order", "id"), 1):
+        name = f"{number:02d}{Path(image.image.name).suffix}"
+        files.append((name, image.image))
+        captions[name] = image.caption
+
+    for name, field in files:
+        # A missing media file skips that image instead of failing the whole download.
+        if field.storage.exists(field.name):
+            with field.open("rb") as source:
+                zf.writestr(f"{project.slug}/{name}", source.read())
+
+    payload = ProjectWriteSerializer(project).data
+    payload.pop("id", None)
+    payload["captions"] = captions
+    zf.writestr(
+        f"{project.slug}/project.json", json.dumps(payload, ensure_ascii=False, indent=2)
+    )
+
+
+def zip_response(projects, filename):
+    # A temp file, not memory: "download all" can reach tens of MB of images.
+    archive = tempfile.TemporaryFile()
+    with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zf:
+        for project in projects:
+            write_project_folder(zf, project)
+    archive.seek(0)
+    return FileResponse(archive, as_attachment=True, filename=filename)
 
 
 @admin.register(Profile)
@@ -75,6 +123,9 @@ class ProjectAdmin(ModelAdmin):
     search_fields = ["name", "subtitle", "company", "role"]
     readonly_fields = ["cover_preview_large", "bulk_upload_link"]
     inlines = [ProjectImageInline]
+    actions_row = ["download_folder"]
+    actions_detail = ["download_folder"]
+    actions_list = ["download_all_folders"]
     fieldsets = (
         (None, {"fields": ["slug", "name", "subtitle", "draft", "order"]}),
         ("Cover image", {"fields": ["cover_image", "cover_preview_large"]}),
@@ -151,6 +202,15 @@ class ProjectAdmin(ModelAdmin):
         )
 
     bulk_upload_link.short_description = "Gallery bulk upload"
+
+    @action(description="Download folder", url_path="download-folder")
+    def download_folder(self, request, object_id):
+        project = get_object_or_404(Project, pk=object_id)
+        return zip_response([project], f"{project.slug}.zip")
+
+    @action(description="Download all projects", url_path="download-all-folders")
+    def download_all_folders(self, request):
+        return zip_response(Project.objects.order_by("order", "id"), "projects.zip")
 
     def get_urls(self):
         # Extra admin-only URL for the multi-file upload form below — kept as
